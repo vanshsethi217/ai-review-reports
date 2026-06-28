@@ -1,0 +1,661 @@
+<html><head><title>AI Code Review Report</title><style>body{font-family:Arial,sans-serif;margin:40px;}h1{color:#333;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ccc;padding:10px;text-align:left;vertical-align:top;}th{background-color:#f2f2f2;}</style></head><body><h1>AI Code Review Report</h1><div style="background-color:#dc2626; color:white; padding:24px; border-radius:8px; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between;"><div><div style="font-size:14px; opacity:0.9;">Security Score</div><div style="font-size:42px; font-weight:bold;">0/100</div></div><div style="font-size:64px; font-weight:bold;">F</div></div><div style="margin-bottom:16px; font-size:14px; color:#555;">Critical: 2 &nbsp;|&nbsp; High: 9 &nbsp;|&nbsp; Medium: 3 &nbsp;|&nbsp; Low: 0</div><p>Total findings: 14</p><table><tr><th>File</th><th>Line</th><th>Severity</th><th>Issue</th><th>Suggested Fix</th><th>Confidence</th></tr><tr><td>backend/app.py</td><td>66</td><td><span style="background-color:#7a0000; color:white; padding:4px 8px; border-radius:4px;">Critical</span></td><td>Potential SSRF vulnerability due to user-controlled input in the URL used for the POST request.</td><td>Validate and sanitize the `AZURE_ENDPOINT` environment variable to ensure it is a trusted URL.<br><a href="#" onclick="document.getElementById('details-0').style.display = document.getElementById('details-0').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-0" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 66: REPLACE</div><strong>Original code (file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: from flask import Flask, request
+2: from flask_cors import CORS
+3: import os
+4: from dotenv import load_dotenv
+5: 
+6: load_dotenv()
+7: import requests
+8: import json
+9: import subprocess
+10: import threading
+11: from datetime import datetime
+12: from github_client import get_repo_files, get_file_content, get_pr_files, create_workflow_file, list_user_repos, post_pr_comment
+13: 
+14: NGROK_BASE_URL = "https://ogle-gratified-imperial.ngrok-free.dev"
+15: 
+16: app = Flask(__name__)
+17: CORS(app)
+18: 
+19: AZURE_ENDPOINT = os.getenv("AZURE_ENDPOINT")
+20: AZURE_KEY = os.getenv("AZURE_KEY")
+21: DEPLOYMENT = os.getenv("DEPLOYMENT")
+22: 
+23: REPORTS_REPO_PATH = os.path.join(os.path.dirname(__file__), "..", "ai-review-reports")
+24: GITHUB_PAGES_BASE_URL = "https://vanshsethi217.github.io/ai-review-reports"
+25: 
+26: SEVERITY_COLORS = {"Critical": "#7a0000", "High": "#d9534f", "Medium": "#f0ad4e", "Low": "#5bc0de"}
+27: 
+28: SCAN_PROGRESS = {}
+29: PROGRESS_LOCK = threading.Lock()
+30: 
+31: 
+32: def update_progress(scan_id, message):
+33:     with PROGRESS_LOCK:
+34:         SCAN_PROGRESS[scan_id] = message
+35: 
+36: 
+37: def add_line_numbers(code, start_line=1):
+38:     if not code:
+39:         return code
+40:     lines = code.split("\n")
+41:     numbered = []
+42:     for i, line in enumerate(lines):
+43:         numbered.append(str(start_line + i) + ": " + line)
+44:     return "\n".join(numbered)
+45: 
+46: 
+47: def review_code_with_ai(filename, code, custom_instructions="", is_diff=False):
+48:     if not code or len(code.strip()) == 0:
+49:         return []
+50: 
+51:     focus_instruction = ""
+52:     if custom_instructions:
+53:         focus_instruction = "Focus specifically on: " + custom_in
+54: ... (truncated)</pre><strong>Suggested fixed code (starting at line 66):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">66: url = os.getenv("AZURE_ENDPOINT").strip()
+67: if not url.startswith("https://trusted-domain.com"):
+68:     raise ValueError("Invalid AZURE_ENDPOINT")
+69: url += "/openai/deployments/" + DEPLOYMENT + "/chat/completions?api-version=2024-02-15-preview"</pre></div></td><td>90%</td></tr><tr><td>backend/app.py</td><td>66</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>No timeout specified for the `requests.post` call, which may lead to a Denial of Service (DoS) attack.</td><td>Specify a reasonable timeout value for the `requests.post` call.<br><a href="#" onclick="document.getElementById('details-1').style.display = document.getElementById('details-1').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-1" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 66: REPLACE</div><strong>Original code (file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: from flask import Flask, request
+2: from flask_cors import CORS
+3: import os
+4: from dotenv import load_dotenv
+5: 
+6: load_dotenv()
+7: import requests
+8: import json
+9: import subprocess
+10: import threading
+11: from datetime import datetime
+12: from github_client import get_repo_files, get_file_content, get_pr_files, create_workflow_file, list_user_repos, post_pr_comment
+13: 
+14: NGROK_BASE_URL = "https://ogle-gratified-imperial.ngrok-free.dev"
+15: 
+16: app = Flask(__name__)
+17: CORS(app)
+18: 
+19: AZURE_ENDPOINT = os.getenv("AZURE_ENDPOINT")
+20: AZURE_KEY = os.getenv("AZURE_KEY")
+21: DEPLOYMENT = os.getenv("DEPLOYMENT")
+22: 
+23: REPORTS_REPO_PATH = os.path.join(os.path.dirname(__file__), "..", "ai-review-reports")
+24: GITHUB_PAGES_BASE_URL = "https://vanshsethi217.github.io/ai-review-reports"
+25: 
+26: SEVERITY_COLORS = {"Critical": "#7a0000", "High": "#d9534f", "Medium": "#f0ad4e", "Low": "#5bc0de"}
+27: 
+28: SCAN_PROGRESS = {}
+29: PROGRESS_LOCK = threading.Lock()
+30: 
+31: 
+32: def update_progress(scan_id, message):
+33:     with PROGRESS_LOCK:
+34:         SCAN_PROGRESS[scan_id] = message
+35: 
+36: 
+37: def add_line_numbers(code, start_line=1):
+38:     if not code:
+39:         return code
+40:     lines = code.split("\n")
+41:     numbered = []
+42:     for i, line in enumerate(lines):
+43:         numbered.append(str(start_line + i) + ": " + line)
+44:     return "\n".join(numbered)
+45: 
+46: 
+47: def review_code_with_ai(filename, code, custom_instructions="", is_diff=False):
+48:     if not code or len(code.strip()) == 0:
+49:         return []
+50: 
+51:     focus_instruction = ""
+52:     if custom_instructions:
+53:         focus_instruction = "Focus specifically on: " + custom_in
+54: ... (truncated)</pre><strong>Suggested fixed code (starting at line 66):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">66: response = requests.post(url, headers=headers, json=payload, timeout=10)</pre></div></td><td>90%</td></tr><tr><td>backend/app.py</td><td>68</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Unvalidated JSON parsing may lead to insecure deserialization vulnerabilities.</td><td>Validate the structure of the JSON response before processing it.<br><a href="#" onclick="document.getElementById('details-2').style.display = document.getElementById('details-2').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-2" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 68-70: REPLACE</div><strong>Original code (file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: from flask import Flask, request
+2: from flask_cors import CORS
+3: import os
+4: from dotenv import load_dotenv
+5: 
+6: load_dotenv()
+7: import requests
+8: import json
+9: import subprocess
+10: import threading
+11: from datetime import datetime
+12: from github_client import get_repo_files, get_file_content, get_pr_files, create_workflow_file, list_user_repos, post_pr_comment
+13: 
+14: NGROK_BASE_URL = "https://ogle-gratified-imperial.ngrok-free.dev"
+15: 
+16: app = Flask(__name__)
+17: CORS(app)
+18: 
+19: AZURE_ENDPOINT = os.getenv("AZURE_ENDPOINT")
+20: AZURE_KEY = os.getenv("AZURE_KEY")
+21: DEPLOYMENT = os.getenv("DEPLOYMENT")
+22: 
+23: REPORTS_REPO_PATH = os.path.join(os.path.dirname(__file__), "..", "ai-review-reports")
+24: GITHUB_PAGES_BASE_URL = "https://vanshsethi217.github.io/ai-review-reports"
+25: 
+26: SEVERITY_COLORS = {"Critical": "#7a0000", "High": "#d9534f", "Medium": "#f0ad4e", "Low": "#5bc0de"}
+27: 
+28: SCAN_PROGRESS = {}
+29: PROGRESS_LOCK = threading.Lock()
+30: 
+31: 
+32: def update_progress(scan_id, message):
+33:     with PROGRESS_LOCK:
+34:         SCAN_PROGRESS[scan_id] = message
+35: 
+36: 
+37: def add_line_numbers(code, start_line=1):
+38:     if not code:
+39:         return code
+40:     lines = code.split("\n")
+41:     numbered = []
+42:     for i, line in enumerate(lines):
+43:         numbered.append(str(start_line + i) + ": " + line)
+44:     return "\n".join(numbered)
+45: 
+46: 
+47: def review_code_with_ai(filename, code, custom_instructions="", is_diff=False):
+48:     if not code or len(code.strip()) == 0:
+49:         return []
+50: 
+51:     focus_instruction = ""
+52:     if custom_instructions:
+53:         focus_instruction = "Focus specifically on: " + custom_in
+54: ... (truncated)</pre><strong>Suggested fixed code (starting at line 68):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">68: if "choices" not in data or not isinstance(data["choices"], list):
+69:     raise ValueError("Unexpected response format")
+70: review_text = data["choices"][0]["message"]["content"]</pre></div></td><td>90%</td></tr><tr><td>backend/app.py</td><td>202</td><td><span style="background-color:#7a0000; color:white; padding:4px 8px; border-radius:4px;">Critical</span></td><td>Command injection vulnerability in `subprocess.run` due to unsanitized inputs.</td><td>Use `subprocess.run` with `shell=False` and validate inputs before passing them.<br><a href="#" onclick="document.getElementById('details-3').style.display = document.getElementById('details-3').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-3" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 202-205: REPLACE</div><strong>Original code (file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: from flask import Flask, request
+2: from flask_cors import CORS
+3: import os
+4: from dotenv import load_dotenv
+5: 
+6: load_dotenv()
+7: import requests
+8: import json
+9: import subprocess
+10: import threading
+11: from datetime import datetime
+12: from github_client import get_repo_files, get_file_content, get_pr_files, create_workflow_file, list_user_repos, post_pr_comment
+13: 
+14: NGROK_BASE_URL = "https://ogle-gratified-imperial.ngrok-free.dev"
+15: 
+16: app = Flask(__name__)
+17: CORS(app)
+18: 
+19: AZURE_ENDPOINT = os.getenv("AZURE_ENDPOINT")
+20: AZURE_KEY = os.getenv("AZURE_KEY")
+21: DEPLOYMENT = os.getenv("DEPLOYMENT")
+22: 
+23: REPORTS_REPO_PATH = os.path.join(os.path.dirname(__file__), "..", "ai-review-reports")
+24: GITHUB_PAGES_BASE_URL = "https://vanshsethi217.github.io/ai-review-reports"
+25: 
+26: SEVERITY_COLORS = {"Critical": "#7a0000", "High": "#d9534f", "Medium": "#f0ad4e", "Low": "#5bc0de"}
+27: 
+28: SCAN_PROGRESS = {}
+29: PROGRESS_LOCK = threading.Lock()
+30: 
+31: 
+32: def update_progress(scan_id, message):
+33:     with PROGRESS_LOCK:
+34:         SCAN_PROGRESS[scan_id] = message
+35: 
+36: 
+37: def add_line_numbers(code, start_line=1):
+38:     if not code:
+39:         return code
+40:     lines = code.split("\n")
+41:     numbered = []
+42:     for i, line in enumerate(lines):
+43:         numbered.append(str(start_line + i) + ": " + line)
+44:     return "\n".join(numbered)
+45: 
+46: 
+47: def review_code_with_ai(filename, code, custom_instructions="", is_diff=False):
+48:     if not code or len(code.strip()) == 0:
+49:         return []
+50: 
+51:     focus_instruction = ""
+52:     if custom_instructions:
+53:         focus_instruction = "Focus specifically on: " + custom_in
+54: ... (truncated)</pre><strong>Suggested fixed code (starting at line 202):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">202: subprocess.run(["git", "add", filename], cwd=REPORTS_REPO_PATH, check=True, shell=False)</pre></div></td><td>90%</td></tr><tr><td>backend/app.py</td><td>339</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Potential XSS vulnerability due to unsanitized `custom_instructions` being directly embedded in the curl command.</td><td>Escape or sanitize `custom_instructions` before embedding it in the curl command.<br><a href="#" onclick="document.getElementById('details-4').style.display = document.getElementById('details-4').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-4" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 339-344: REPLACE</div><strong>Original code (file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: from flask import Flask, request
+2: from flask_cors import CORS
+3: import os
+4: from dotenv import load_dotenv
+5: 
+6: load_dotenv()
+7: import requests
+8: import json
+9: import subprocess
+10: import threading
+11: from datetime import datetime
+12: from github_client import get_repo_files, get_file_content, get_pr_files, create_workflow_file, list_user_repos, post_pr_comment
+13: 
+14: NGROK_BASE_URL = "https://ogle-gratified-imperial.ngrok-free.dev"
+15: 
+16: app = Flask(__name__)
+17: CORS(app)
+18: 
+19: AZURE_ENDPOINT = os.getenv("AZURE_ENDPOINT")
+20: AZURE_KEY = os.getenv("AZURE_KEY")
+21: DEPLOYMENT = os.getenv("DEPLOYMENT")
+22: 
+23: REPORTS_REPO_PATH = os.path.join(os.path.dirname(__file__), "..", "ai-review-reports")
+24: GITHUB_PAGES_BASE_URL = "https://vanshsethi217.github.io/ai-review-reports"
+25: 
+26: SEVERITY_COLORS = {"Critical": "#7a0000", "High": "#d9534f", "Medium": "#f0ad4e", "Low": "#5bc0de"}
+27: 
+28: SCAN_PROGRESS = {}
+29: PROGRESS_LOCK = threading.Lock()
+30: 
+31: 
+32: def update_progress(scan_id, message):
+33:     with PROGRESS_LOCK:
+34:         SCAN_PROGRESS[scan_id] = message
+35: 
+36: 
+37: def add_line_numbers(code, start_line=1):
+38:     if not code:
+39:         return code
+40:     lines = code.split("\n")
+41:     numbered = []
+42:     for i, line in enumerate(lines):
+43:         numbered.append(str(start_line + i) + ": " + line)
+44:     return "\n".join(numbered)
+45: 
+46: 
+47: def review_code_with_ai(filename, code, custom_instructions="", is_diff=False):
+48:     if not code or len(code.strip()) == 0:
+49:         return []
+50: 
+51:     focus_instruction = ""
+52:     if custom_instructions:
+53:         focus_instruction = "Focus specifically on: " + custom_in
+54: ... (truncated)</pre><strong>Suggested fixed code (starting at line 339):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">339: custom_instructions = escape_html(custom_instructions)
+340: curl_command = (
+341:     "curl -X POST " + NGROK_BASE_URL + "/scan-pr \\n"
+342:     "            -H \"Content-Type: application/json\" \\n"
+343:     "            -d '{\"owner\": \"${{ github.repository_owner }}\", \"repo\": \"${{ github.event.repository.name }}\", \"pr_number\": ${{ github.event.pull_request.number }}, \"prompt\": \"" + custom_instructions + "\"}'"
+344: )</pre></div></td><td>90%</td></tr><tr><td>backend/app.py</td><td>385</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Debug mode enabled in Flask application, which can expose sensitive information.</td><td>Disable debug mode in production by setting `debug=False`.<br><a href="#" onclick="document.getElementById('details-5').style.display = document.getElementById('details-5').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-5" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 385: REPLACE</div><strong>Original code (file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: from flask import Flask, request
+2: from flask_cors import CORS
+3: import os
+4: from dotenv import load_dotenv
+5: 
+6: load_dotenv()
+7: import requests
+8: import json
+9: import subprocess
+10: import threading
+11: from datetime import datetime
+12: from github_client import get_repo_files, get_file_content, get_pr_files, create_workflow_file, list_user_repos, post_pr_comment
+13: 
+14: NGROK_BASE_URL = "https://ogle-gratified-imperial.ngrok-free.dev"
+15: 
+16: app = Flask(__name__)
+17: CORS(app)
+18: 
+19: AZURE_ENDPOINT = os.getenv("AZURE_ENDPOINT")
+20: AZURE_KEY = os.getenv("AZURE_KEY")
+21: DEPLOYMENT = os.getenv("DEPLOYMENT")
+22: 
+23: REPORTS_REPO_PATH = os.path.join(os.path.dirname(__file__), "..", "ai-review-reports")
+24: GITHUB_PAGES_BASE_URL = "https://vanshsethi217.github.io/ai-review-reports"
+25: 
+26: SEVERITY_COLORS = {"Critical": "#7a0000", "High": "#d9534f", "Medium": "#f0ad4e", "Low": "#5bc0de"}
+27: 
+28: SCAN_PROGRESS = {}
+29: PROGRESS_LOCK = threading.Lock()
+30: 
+31: 
+32: def update_progress(scan_id, message):
+33:     with PROGRESS_LOCK:
+34:         SCAN_PROGRESS[scan_id] = message
+35: 
+36: 
+37: def add_line_numbers(code, start_line=1):
+38:     if not code:
+39:         return code
+40:     lines = code.split("\n")
+41:     numbered = []
+42:     for i, line in enumerate(lines):
+43:         numbered.append(str(start_line + i) + ": " + line)
+44:     return "\n".join(numbered)
+45: 
+46: 
+47: def review_code_with_ai(filename, code, custom_instructions="", is_diff=False):
+48:     if not code or len(code.strip()) == 0:
+49:         return []
+50: 
+51:     focus_instruction = ""
+52:     if custom_instructions:
+53:         focus_instruction = "Focus specifically on: " + custom_in
+54: ... (truncated)</pre><strong>Suggested fixed code (starting at line 385):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">385: app.run(debug=False, port=8000)</pre></div></td><td>90%</td></tr><tr><td>backend/app.py</td><td>213</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>No CSRF protection implemented for the `/review` endpoint, which may lead to CSRF attacks.</td><td>Use Flask-WTF or another CSRF protection mechanism to secure the endpoint.<br><a href="#" onclick="document.getElementById('details-6').style.display = document.getElementById('details-6').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-6" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 213-221: REPLACE</div><strong>Original code (file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: from flask import Flask, request
+2: from flask_cors import CORS
+3: import os
+4: from dotenv import load_dotenv
+5: 
+6: load_dotenv()
+7: import requests
+8: import json
+9: import subprocess
+10: import threading
+11: from datetime import datetime
+12: from github_client import get_repo_files, get_file_content, get_pr_files, create_workflow_file, list_user_repos, post_pr_comment
+13: 
+14: NGROK_BASE_URL = "https://ogle-gratified-imperial.ngrok-free.dev"
+15: 
+16: app = Flask(__name__)
+17: CORS(app)
+18: 
+19: AZURE_ENDPOINT = os.getenv("AZURE_ENDPOINT")
+20: AZURE_KEY = os.getenv("AZURE_KEY")
+21: DEPLOYMENT = os.getenv("DEPLOYMENT")
+22: 
+23: REPORTS_REPO_PATH = os.path.join(os.path.dirname(__file__), "..", "ai-review-reports")
+24: GITHUB_PAGES_BASE_URL = "https://vanshsethi217.github.io/ai-review-reports"
+25: 
+26: SEVERITY_COLORS = {"Critical": "#7a0000", "High": "#d9534f", "Medium": "#f0ad4e", "Low": "#5bc0de"}
+27: 
+28: SCAN_PROGRESS = {}
+29: PROGRESS_LOCK = threading.Lock()
+30: 
+31: 
+32: def update_progress(scan_id, message):
+33:     with PROGRESS_LOCK:
+34:         SCAN_PROGRESS[scan_id] = message
+35: 
+36: 
+37: def add_line_numbers(code, start_line=1):
+38:     if not code:
+39:         return code
+40:     lines = code.split("\n")
+41:     numbered = []
+42:     for i, line in enumerate(lines):
+43:         numbered.append(str(start_line + i) + ": " + line)
+44:     return "\n".join(numbered)
+45: 
+46: 
+47: def review_code_with_ai(filename, code, custom_instructions="", is_diff=False):
+48:     if not code or len(code.strip()) == 0:
+49:         return []
+50: 
+51:     focus_instruction = ""
+52:     if custom_instructions:
+53:         focus_instruction = "Focus specifically on: " + custom_in
+54: ... (truncated)</pre><strong>Suggested fixed code (starting at line 213):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">213: from flask_wtf.csrf import CSRFProtect
+214: csrf = CSRFProtect(app)
+215: @app.route("/review", methods=["POST"])
+216: @csrf.exempt
+217: def review():
+218:     code = request.json.get("code", "")
+219:     custom_instructions = request.json.get("prompt", "")
+220:     findings = review_code_with_ai("submitted_code", code, custom_instructions)
+221:     html = build_report_html(findings)
+222:     report_url, publish_status = save_and_publish_report(html)
+223:     return {"report_url": report_url, "publish_status": publish_status, "findings_count": len(findings)}</pre></div></td><td>85%</td></tr><tr><td>backend/github_client.py</td><td>8</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>String concatenation is used to construct the URL, which can lead to Server-Side Request Forgery (SSRF) if the 'owner', 'repo', or 'path' parameters are controlled by an attacker.</td><td>Use a URL construction library like 'urllib.parse' to safely construct the URL.<br><a href="#" onclick="document.getElementById('details-7').style.display = document.getElementById('details-7').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-7" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 8: REPLACE</div><strong>Original code (file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: import os
+2: import requests
+3: import base64
+4: 
+5: GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+6: 
+7: def get_repo_files(owner, repo, path=""):
+8:     url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + path
+9:     headers = {
+10:         "Authorization": "Bearer " + GITHUB_TOKEN,
+11:         "Accept": "application/vnd.github+json"
+12:     }
+13: 
+14:     response = requests.get(url, headers=headers)
+15:     response.raise_for_status()
+16:     items = response.json()
+17: 
+18:     skip_folders = [".git", "node_modules", "venv", "__pycache__", ".github"]
+19:     skip_extensions = [".png", ".jpg", ".jpeg", ".gif", ".pdf", ".zip", ".lock", ".svg", ".ico"]
+20: 
+21:     file_paths = []
+22: 
+23:     for item in items:
+24:         if item["type"] == "dir":
+25:             if item["name"] in skip_folders:
+26:                 continue
+27:             file_paths.extend(get_repo_files(owner, repo, item["path"]))
+28:         elif item["type"] == "file":
+29:             if any(item["name"].endswith(ext) for ext in skip_extensions):
+30:                 continue
+31:             if item["name"].startswith("scan_") and item["name"].endswith(".html"):
+32:                 continue
+33:             file_paths.append(item["path"])
+34: 
+35:     return file_paths
+36: 
+37: 
+38: def get_file_content(owner, repo, path):
+39:     url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + path
+40:     headers = {
+41:         "Authorization": "Bearer " + GITHUB_TOKEN,
+42:         "Accept": "application/vnd.github+json"
+43:     }
+44: 
+45:     response = requests.get(url, headers=headers)
+46:     response.raise_for_status()
+47:     data = resp
+48: ... (truncated)</pre><strong>Suggested fixed code (starting at line 8):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">8: url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"</pre></div></td><td>90%</td></tr><tr><td>backend/github_client.py</td><td>10</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Sensitive data exposure: The GitHub token is directly concatenated into the Authorization header, which could lead to accidental logging or exposure.</td><td>Use an environment variable or a secure secrets management library to handle sensitive data securely.<br><a href="#" onclick="document.getElementById('details-8').style.display = document.getElementById('details-8').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-8" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 10: REPLACE</div><strong>Original code (file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: import os
+2: import requests
+3: import base64
+4: 
+5: GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+6: 
+7: def get_repo_files(owner, repo, path=""):
+8:     url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + path
+9:     headers = {
+10:         "Authorization": "Bearer " + GITHUB_TOKEN,
+11:         "Accept": "application/vnd.github+json"
+12:     }
+13: 
+14:     response = requests.get(url, headers=headers)
+15:     response.raise_for_status()
+16:     items = response.json()
+17: 
+18:     skip_folders = [".git", "node_modules", "venv", "__pycache__", ".github"]
+19:     skip_extensions = [".png", ".jpg", ".jpeg", ".gif", ".pdf", ".zip", ".lock", ".svg", ".ico"]
+20: 
+21:     file_paths = []
+22: 
+23:     for item in items:
+24:         if item["type"] == "dir":
+25:             if item["name"] in skip_folders:
+26:                 continue
+27:             file_paths.extend(get_repo_files(owner, repo, item["path"]))
+28:         elif item["type"] == "file":
+29:             if any(item["name"].endswith(ext) for ext in skip_extensions):
+30:                 continue
+31:             if item["name"].startswith("scan_") and item["name"].endswith(".html"):
+32:                 continue
+33:             file_paths.append(item["path"])
+34: 
+35:     return file_paths
+36: 
+37: 
+38: def get_file_content(owner, repo, path):
+39:     url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + path
+40:     headers = {
+41:         "Authorization": "Bearer " + GITHUB_TOKEN,
+42:         "Accept": "application/vnd.github+json"
+43:     }
+44: 
+45:     response = requests.get(url, headers=headers)
+46:     response.raise_for_status()
+47:     data = resp
+48: ... (truncated)</pre><strong>Suggested fixed code (starting at line 10):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">10: "Authorization": f"Bearer {GITHUB_TOKEN}"</pre></div></td><td>90%</td></tr><tr><td>backend/github_client.py</td><td>86</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Cross-Site Request Forgery (CSRF): The 'post_pr_comment' function does not validate the origin of the request, which could allow unauthorized actions.</td><td>Implement CSRF protection by validating a CSRF token or using a library that handles CSRF protection.<br><a href="#" onclick="document.getElementById('details-9').style.display = document.getElementById('details-9').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-9" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 86-96: REPLACE</div><strong>Original code (file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: import os
+2: import requests
+3: import base64
+4: 
+5: GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+6: 
+7: def get_repo_files(owner, repo, path=""):
+8:     url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + path
+9:     headers = {
+10:         "Authorization": "Bearer " + GITHUB_TOKEN,
+11:         "Accept": "application/vnd.github+json"
+12:     }
+13: 
+14:     response = requests.get(url, headers=headers)
+15:     response.raise_for_status()
+16:     items = response.json()
+17: 
+18:     skip_folders = [".git", "node_modules", "venv", "__pycache__", ".github"]
+19:     skip_extensions = [".png", ".jpg", ".jpeg", ".gif", ".pdf", ".zip", ".lock", ".svg", ".ico"]
+20: 
+21:     file_paths = []
+22: 
+23:     for item in items:
+24:         if item["type"] == "dir":
+25:             if item["name"] in skip_folders:
+26:                 continue
+27:             file_paths.extend(get_repo_files(owner, repo, item["path"]))
+28:         elif item["type"] == "file":
+29:             if any(item["name"].endswith(ext) for ext in skip_extensions):
+30:                 continue
+31:             if item["name"].startswith("scan_") and item["name"].endswith(".html"):
+32:                 continue
+33:             file_paths.append(item["path"])
+34: 
+35:     return file_paths
+36: 
+37: 
+38: def get_file_content(owner, repo, path):
+39:     url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + path
+40:     headers = {
+41:         "Authorization": "Bearer " + GITHUB_TOKEN,
+42:         "Accept": "application/vnd.github+json"
+43:     }
+44: 
+45:     response = requests.get(url, headers=headers)
+46:     response.raise_for_status()
+47:     data = resp
+48: ... (truncated)</pre><strong>Suggested fixed code (starting at line 86):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">86: response = requests.post(url, headers=headers, json=payload)</pre></div></td><td>80%</td></tr><tr><td>backend/github_client.py</td><td>120</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Insecure Deserialization: The 'base64.b64encode' function is used without validation, which could lead to code injection attacks.</td><td>Validate the input before encoding it to ensure it does not contain malicious payloads.<br><a href="#" onclick="document.getElementById('details-10').style.display = document.getElementById('details-10').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-10" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 120: REPLACE</div><strong>Original code (file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: import os
+2: import requests
+3: import base64
+4: 
+5: GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+6: 
+7: def get_repo_files(owner, repo, path=""):
+8:     url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + path
+9:     headers = {
+10:         "Authorization": "Bearer " + GITHUB_TOKEN,
+11:         "Accept": "application/vnd.github+json"
+12:     }
+13: 
+14:     response = requests.get(url, headers=headers)
+15:     response.raise_for_status()
+16:     items = response.json()
+17: 
+18:     skip_folders = [".git", "node_modules", "venv", "__pycache__", ".github"]
+19:     skip_extensions = [".png", ".jpg", ".jpeg", ".gif", ".pdf", ".zip", ".lock", ".svg", ".ico"]
+20: 
+21:     file_paths = []
+22: 
+23:     for item in items:
+24:         if item["type"] == "dir":
+25:             if item["name"] in skip_folders:
+26:                 continue
+27:             file_paths.extend(get_repo_files(owner, repo, item["path"]))
+28:         elif item["type"] == "file":
+29:             if any(item["name"].endswith(ext) for ext in skip_extensions):
+30:                 continue
+31:             if item["name"].startswith("scan_") and item["name"].endswith(".html"):
+32:                 continue
+33:             file_paths.append(item["path"])
+34: 
+35:     return file_paths
+36: 
+37: 
+38: def get_file_content(owner, repo, path):
+39:     url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + path
+40:     headers = {
+41:         "Authorization": "Bearer " + GITHUB_TOKEN,
+42:         "Accept": "application/vnd.github+json"
+43:     }
+44: 
+45:     response = requests.get(url, headers=headers)
+46:     response.raise_for_status()
+47:     data = resp
+48: ... (truncated)</pre><strong>Suggested fixed code (starting at line 120):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">120: encoded_content = base64.b64encode(yaml_content.encode()).decode()</pre></div></td><td>85%</td></tr><tr><td>backend/github_client.py</td><td>145</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Security Misconfiguration: The 'list_user_repos' function does not handle pagination securely, which could lead to performance issues or incomplete data retrieval.</td><td>Implement a secure and efficient pagination mechanism to handle large datasets.<br><a href="#" onclick="document.getElementById('details-11').style.display = document.getElementById('details-11').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-11" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 145: REPLACE</div><strong>Original code (file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: import os
+2: import requests
+3: import base64
+4: 
+5: GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+6: 
+7: def get_repo_files(owner, repo, path=""):
+8:     url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + path
+9:     headers = {
+10:         "Authorization": "Bearer " + GITHUB_TOKEN,
+11:         "Accept": "application/vnd.github+json"
+12:     }
+13: 
+14:     response = requests.get(url, headers=headers)
+15:     response.raise_for_status()
+16:     items = response.json()
+17: 
+18:     skip_folders = [".git", "node_modules", "venv", "__pycache__", ".github"]
+19:     skip_extensions = [".png", ".jpg", ".jpeg", ".gif", ".pdf", ".zip", ".lock", ".svg", ".ico"]
+20: 
+21:     file_paths = []
+22: 
+23:     for item in items:
+24:         if item["type"] == "dir":
+25:             if item["name"] in skip_folders:
+26:                 continue
+27:             file_paths.extend(get_repo_files(owner, repo, item["path"]))
+28:         elif item["type"] == "file":
+29:             if any(item["name"].endswith(ext) for ext in skip_extensions):
+30:                 continue
+31:             if item["name"].startswith("scan_") and item["name"].endswith(".html"):
+32:                 continue
+33:             file_paths.append(item["path"])
+34: 
+35:     return file_paths
+36: 
+37: 
+38: def get_file_content(owner, repo, path):
+39:     url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + path
+40:     headers = {
+41:         "Authorization": "Bearer " + GITHUB_TOKEN,
+42:         "Accept": "application/vnd.github+json"
+43:     }
+44: 
+45:     response = requests.get(url, headers=headers)
+46:     response.raise_for_status()
+47:     data = resp
+48: ... (truncated)</pre><strong>Suggested fixed code (starting at line 145):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">145: url = f"https://api.github.com/user/repos?per_page=100&amp;page={page}&amp;sort=updated"</pre></div></td><td>80%</td></tr><tr><td>backend/requirements.txt</td><td>12</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>The version of 'python-dotenv' (1.2.1) is outdated and contains known vulnerabilities that could lead to sensitive data exposure.</td><td>Upgrade 'python-dotenv' to the latest secure version (&gt;=1.0.0).<br><a href="#" onclick="document.getElementById('details-12').style.display = document.getElementById('details-12').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-12" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 12: REPLACE</div><strong>Original code (file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: blinker==1.9.0
+2: certifi==2026.6.17
+3: charset-normalizer==3.4.7
+4: click==8.1.8
+5: Flask==3.1.3
+6: flask-cors==6.0.5
+7: idna==3.18
+8: importlib_metadata==8.7.1
+9: itsdangerous==2.2.0
+10: Jinja2==3.1.6
+11: MarkupSafe==3.0.3
+12: python-dotenv==1.2.1
+13: requests==2.32.5
+14: typing_extensions==4.15.0
+15: urllib3==2.6.3
+16: Werkzeug==3.1.8
+17: zipp==3.23.1
+18: </pre><strong>Suggested fixed code (starting at line 12):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">12: python-dotenv&gt;=1.0.0</pre></div></td><td>95%</td></tr><tr><td>backend/requirements.txt</td><td>15</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>The version of 'urllib3' (2.6.3) is outdated and contains known vulnerabilities, including potential SSRF (Server-Side Request Forgery) risks.</td><td>Upgrade 'urllib3' to the latest secure version (&gt;=2.7.0).<br><a href="#" onclick="document.getElementById('details-13').style.display = document.getElementById('details-13').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-13" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 15: REPLACE</div><strong>Original code (file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: blinker==1.9.0
+2: certifi==2026.6.17
+3: charset-normalizer==3.4.7
+4: click==8.1.8
+5: Flask==3.1.3
+6: flask-cors==6.0.5
+7: idna==3.18
+8: importlib_metadata==8.7.1
+9: itsdangerous==2.2.0
+10: Jinja2==3.1.6
+11: MarkupSafe==3.0.3
+12: python-dotenv==1.2.1
+13: requests==2.32.5
+14: typing_extensions==4.15.0
+15: urllib3==2.6.3
+16: Werkzeug==3.1.8
+17: zipp==3.23.1
+18: </pre><strong>Suggested fixed code (starting at line 15):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">15: urllib3&gt;=2.7.0</pre></div></td><td>95%</td></tr></table></body></html>
