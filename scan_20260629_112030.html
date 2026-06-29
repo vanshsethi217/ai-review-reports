@@ -1,0 +1,126 @@
+<html><head><title>AI Code Review Report</title><style>body{font-family:Arial,sans-serif;margin:40px;}h1{color:#333;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ccc;padding:10px;text-align:left;vertical-align:top;}th{background-color:#f2f2f2;}</style></head><body><h1>AI Code Review Report</h1><div style="background-color:#dc2626; color:white; padding:24px; border-radius:8px; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between;"><div><div style="font-size:14px; opacity:0.9;">Security Score</div><div style="font-size:42px; font-weight:bold;">0/100</div></div><div style="font-size:64px; font-weight:bold;">F</div></div><div style="margin-bottom:16px; font-size:14px; color:#555;">Critical: 0 &nbsp;|&nbsp; High: 8 &nbsp;|&nbsp; Medium: 4 &nbsp;|&nbsp; Low: 0</div><p>Total findings: 12</p><table><tr><th>File</th><th>Line</th><th>Severity</th><th>Issue</th><th>Suggested Fix</th><th>Confidence</th></tr><tr><td>index.html</td><td>26</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Inline JavaScript in the onclick attribute can lead to cross-site scripting (XSS) vulnerabilities.</td><td>Move the JavaScript logic to an external script file and use event listeners instead of inline event handlers.<br><a href="#" onclick="document.getElementById('details-0').style.display = document.getElementById('details-0').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-0" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 26: MODIFY</div><strong>Original code (lines 21+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">21:         &lt;div class="form-group"&gt;
+22:             &lt;label for="prompt"&gt;Custom Review Focus (optional)&lt;/label&gt;
+23:             &lt;textarea id="prompt" rows="3" placeholder="e.g. Focus only on SQL injection and authentication issues"&gt;&lt;/textarea&gt;
+24:             &lt;div class="preset-label"&gt;Suggested prompts (click to use):&lt;/div&gt;
+25:             &lt;div class="preset-buttons"&gt;
+26:                 &lt;button type="button" class="preset-btn" onclick="setPreset('SQL injection and database security')"&gt;SQL Injection&lt;/button&gt;
+27:                 &lt;button type="button" class="preset-btn" onclick="setPreset('OWASP Top 10 vulnerabilities')"&gt;OWASP Top 10&lt;/button&gt;
+28:                 &lt;button type="button" class="preset-btn" onclick="setPreset('performance and code efficiency')"&gt;Performance&lt;/button&gt;
+29:                 &lt;button type="button" class="preset-btn" onclick="setPreset('')"&gt;Clear&lt;/button&gt;
+30:             &lt;/div&gt;
+31:             &lt;div class="saved-prompts-row"&gt;</pre><strong>Suggested fixed code (starting at line 26):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">26: &lt;button type="button" class="preset-btn" id="sqlInjectionBtn"&gt;SQL Injection&lt;/button&gt;</pre></div></td><td>90%</td></tr><tr><td>index.html</td><td>27</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Inline JavaScript in the onclick attribute can lead to cross-site scripting (XSS) vulnerabilities.</td><td>Move the JavaScript logic to an external script file and use event listeners instead of inline event handlers.<br><a href="#" onclick="document.getElementById('details-1').style.display = document.getElementById('details-1').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-1" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 27: MODIFY</div><strong>Original code (lines 22+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">22:             &lt;label for="prompt"&gt;Custom Review Focus (optional)&lt;/label&gt;
+23:             &lt;textarea id="prompt" rows="3" placeholder="e.g. Focus only on SQL injection and authentication issues"&gt;&lt;/textarea&gt;
+24:             &lt;div class="preset-label"&gt;Suggested prompts (click to use):&lt;/div&gt;
+25:             &lt;div class="preset-buttons"&gt;
+26:                 &lt;button type="button" class="preset-btn" onclick="setPreset('SQL injection and database security')"&gt;SQL Injection&lt;/button&gt;
+27:                 &lt;button type="button" class="preset-btn" onclick="setPreset('OWASP Top 10 vulnerabilities')"&gt;OWASP Top 10&lt;/button&gt;
+28:                 &lt;button type="button" class="preset-btn" onclick="setPreset('performance and code efficiency')"&gt;Performance&lt;/button&gt;
+29:                 &lt;button type="button" class="preset-btn" onclick="setPreset('')"&gt;Clear&lt;/button&gt;
+30:             &lt;/div&gt;
+31:             &lt;div class="saved-prompts-row"&gt;
+32:                 &lt;button type="button" class="save-prompt-btn" onclick="saveCurrentPrompt()"&gt;+ Save current prompt&lt;/button&gt;</pre><strong>Suggested fixed code (starting at line 27):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">27: &lt;button type="button" class="preset-btn" id="owaspTop10Btn"&gt;OWASP Top 10&lt;/button&gt;</pre></div></td><td>90%</td></tr><tr><td>index.html</td><td>28</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Inline JavaScript in the onclick attribute can lead to cross-site scripting (XSS) vulnerabilities.</td><td>Move the JavaScript logic to an external script file and use event listeners instead of inline event handlers.<br><a href="#" onclick="document.getElementById('details-2').style.display = document.getElementById('details-2').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-2" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 28: MODIFY</div><strong>Original code (lines 23+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">23:             &lt;textarea id="prompt" rows="3" placeholder="e.g. Focus only on SQL injection and authentication issues"&gt;&lt;/textarea&gt;
+24:             &lt;div class="preset-label"&gt;Suggested prompts (click to use):&lt;/div&gt;
+25:             &lt;div class="preset-buttons"&gt;
+26:                 &lt;button type="button" class="preset-btn" onclick="setPreset('SQL injection and database security')"&gt;SQL Injection&lt;/button&gt;
+27:                 &lt;button type="button" class="preset-btn" onclick="setPreset('OWASP Top 10 vulnerabilities')"&gt;OWASP Top 10&lt;/button&gt;
+28:                 &lt;button type="button" class="preset-btn" onclick="setPreset('performance and code efficiency')"&gt;Performance&lt;/button&gt;
+29:                 &lt;button type="button" class="preset-btn" onclick="setPreset('')"&gt;Clear&lt;/button&gt;
+30:             &lt;/div&gt;
+31:             &lt;div class="saved-prompts-row"&gt;
+32:                 &lt;button type="button" class="save-prompt-btn" onclick="saveCurrentPrompt()"&gt;+ Save current prompt&lt;/button&gt;
+33:             &lt;/div&gt;</pre><strong>Suggested fixed code (starting at line 28):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">28: &lt;button type="button" class="preset-btn" id="performanceBtn"&gt;Performance&lt;/button&gt;</pre></div></td><td>90%</td></tr><tr><td>index.html</td><td>29</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Inline JavaScript in the onclick attribute can lead to cross-site scripting (XSS) vulnerabilities.</td><td>Move the JavaScript logic to an external script file and use event listeners instead of inline event handlers.<br><a href="#" onclick="document.getElementById('details-3').style.display = document.getElementById('details-3').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-3" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 29: MODIFY</div><strong>Original code (lines 24+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">24:             &lt;div class="preset-label"&gt;Suggested prompts (click to use):&lt;/div&gt;
+25:             &lt;div class="preset-buttons"&gt;
+26:                 &lt;button type="button" class="preset-btn" onclick="setPreset('SQL injection and database security')"&gt;SQL Injection&lt;/button&gt;
+27:                 &lt;button type="button" class="preset-btn" onclick="setPreset('OWASP Top 10 vulnerabilities')"&gt;OWASP Top 10&lt;/button&gt;
+28:                 &lt;button type="button" class="preset-btn" onclick="setPreset('performance and code efficiency')"&gt;Performance&lt;/button&gt;
+29:                 &lt;button type="button" class="preset-btn" onclick="setPreset('')"&gt;Clear&lt;/button&gt;
+30:             &lt;/div&gt;
+31:             &lt;div class="saved-prompts-row"&gt;
+32:                 &lt;button type="button" class="save-prompt-btn" onclick="saveCurrentPrompt()"&gt;+ Save current prompt&lt;/button&gt;
+33:             &lt;/div&gt;
+34:             &lt;div id="savedPromptsList" class="saved-prompts-list"&gt;&lt;/div&gt;</pre><strong>Suggested fixed code (starting at line 29):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">29: &lt;button type="button" class="preset-btn" id="clearBtn"&gt;Clear&lt;/button&gt;</pre></div></td><td>90%</td></tr><tr><td>index.html</td><td>32</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Inline JavaScript in the onclick attribute can lead to cross-site scripting (XSS) vulnerabilities.</td><td>Move the JavaScript logic to an external script file and use event listeners instead of inline event handlers.<br><a href="#" onclick="document.getElementById('details-4').style.display = document.getElementById('details-4').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-4" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 32: MODIFY</div><strong>Original code (lines 27+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">27:                 &lt;button type="button" class="preset-btn" onclick="setPreset('OWASP Top 10 vulnerabilities')"&gt;OWASP Top 10&lt;/button&gt;
+28:                 &lt;button type="button" class="preset-btn" onclick="setPreset('performance and code efficiency')"&gt;Performance&lt;/button&gt;
+29:                 &lt;button type="button" class="preset-btn" onclick="setPreset('')"&gt;Clear&lt;/button&gt;
+30:             &lt;/div&gt;
+31:             &lt;div class="saved-prompts-row"&gt;
+32:                 &lt;button type="button" class="save-prompt-btn" onclick="saveCurrentPrompt()"&gt;+ Save current prompt&lt;/button&gt;
+33:             &lt;/div&gt;
+34:             &lt;div id="savedPromptsList" class="saved-prompts-list"&gt;&lt;/div&gt;
+35:         &lt;/div&gt;
+36: 
+37:         &lt;button id="scanButton" onclick="runScan()"&gt;Run Scan Now&lt;/button&gt;</pre><strong>Suggested fixed code (starting at line 32):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">32: &lt;button type="button" class="save-prompt-btn" id="savePromptBtn"&gt;+ Save current prompt&lt;/button&gt;</pre></div></td><td>90%</td></tr><tr><td>index.html</td><td>37</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Inline JavaScript in the onclick attribute can lead to cross-site scripting (XSS) vulnerabilities.</td><td>Move the JavaScript logic to an external script file and use event listeners instead of inline event handlers.<br><a href="#" onclick="document.getElementById('details-5').style.display = document.getElementById('details-5').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-5" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 37: MODIFY</div><strong>Original code (lines 32+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">32:                 &lt;button type="button" class="save-prompt-btn" onclick="saveCurrentPrompt()"&gt;+ Save current prompt&lt;/button&gt;
+33:             &lt;/div&gt;
+34:             &lt;div id="savedPromptsList" class="saved-prompts-list"&gt;&lt;/div&gt;
+35:         &lt;/div&gt;
+36: 
+37:         &lt;button id="scanButton" onclick="runScan()"&gt;Run Scan Now&lt;/button&gt;
+38: 
+39:         &lt;div id="status"&gt;&lt;/div&gt;
+40:         &lt;div id="progressList" class="progress-list"&gt;&lt;/div&gt;
+41: 
+42:         &lt;div id="resultBox" class="result-box hidden"&gt;</pre><strong>Suggested fixed code (starting at line 37):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">37: &lt;button id="scanButton"&gt;Run Scan Now&lt;/button&gt;</pre></div></td><td>90%</td></tr><tr><td>index.html</td><td>45</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>The href attribute of the report link is set to '#', which can cause unintended behavior or vulnerabilities if not properly handled.</td><td>Set the href attribute to a meaningful default value or dynamically update it in a secure manner.<br><a href="#" onclick="document.getElementById('details-6').style.display = document.getElementById('details-6').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-6" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 45: MODIFY</div><strong>Original code (lines 40+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">40:         &lt;div id="progressList" class="progress-list"&gt;&lt;/div&gt;
+41: 
+42:         &lt;div id="resultBox" class="result-box hidden"&gt;
+43:             &lt;h3&gt;Scan Complete&lt;/h3&gt;
+44:             &lt;p id="resultSummary"&gt;&lt;/p&gt;
+45:             &lt;a id="reportLink" href="#" target="_blank" class="report-link"&gt;Open Report&lt;/a&gt;
+46:         &lt;/div&gt;
+47:     &lt;/div&gt;
+48: 
+49:     &lt;script src="script.js"&gt;&lt;/script&gt;
+50: &lt;/body&gt;</pre><strong>Suggested fixed code (starting at line 45):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">45: &lt;a id="reportLink" href="javascript:void(0);" target="_blank" class="report-link"&gt;Open Report&lt;/a&gt;</pre></div></td><td>80%</td></tr><tr><td>script.js</td><td>15</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Hardcoded API_BASE_URL exposes the application to potential misuse if the URL is compromised or changed.</td><td>Use environment variables or configuration files to store sensitive URLs.<br><a href="#" onclick="document.getElementById('details-7').style.display = document.getElementById('details-7').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-7" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 15: REPLACE</div><strong>Original code (lines 10+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">10:     document.getElementById("prompt").value = text;
+11: }
+12: 
+13: function loadRepoDropdown() {
+14:     const repoSelect = document.getElementById("repo");
+15:     fetch(API_BASE_URL + "/list-repos", {
+16:         headers: { "ngrok-skip-browser-warning": "true" }
+17:     })
+18:         .then(function(response) { return response.json(); })
+19:         .then(function(data) {
+20:             if (data.error || !data.repos) {</pre><strong>Suggested fixed code (starting at line 15):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">15: const API_BASE_URL = process.env.API_BASE_URL || "https://ogle-gratified-imperial.ngrok-free.dev";</pre></div></td><td>95%</td></tr><tr><td>script.js</td><td>39</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Potential XSS vulnerability when loading saved prompts from localStorage without sanitization.</td><td>Sanitize the promptText before using it to prevent XSS attacks.<br><a href="#" onclick="document.getElementById('details-8').style.display = document.getElementById('details-8').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-8" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 39: REPLACE</div><strong>Original code (lines 34+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">34:         });
+35: }
+36: 
+37: function loadSavedPrompts() {
+38:     const listDiv = document.getElementById("savedPromptsList");
+39:     const saved = JSON.parse(localStorage.getItem("savedPrompts") || "[]");
+40:     listDiv.innerHTML = "";
+41:     saved.forEach(function(promptText, index) {
+42:         const chip = document.createElement("span");
+43:         chip.className = "saved-prompt-chip";
+44:         const shortLabel = promptText.length &gt; 30 ? promptText.substring(0, 30) + "..." : promptText;</pre><strong>Suggested fixed code (starting at line 39):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">39: const saved = JSON.parse(localStorage.getItem("savedPrompts") || "[]").map(prompt =&gt; DOMPurify.sanitize(prompt));</pre></div></td><td>90%</td></tr><tr><td>script.js</td><td>105</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Unvalidated user input in scan_id parameter could lead to potential injection attacks.</td><td>Validate and sanitize the scan_id parameter before using it in the API call.<br><a href="#" onclick="document.getElementById('details-9').style.display = document.getElementById('details-9').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-9" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 105: REPLACE</div><strong>Original code (lines 100+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">100: 
+101: function startProgressPolling(scanId) {
+102:     const progressList = document.getElementById("progressList");
+103:     progressList.innerHTML = "";
+104:     progressPollInterval = setInterval(function() {
+105:         fetch(API_BASE_URL + "/scan-status?scan_id=" + scanId, {
+106:             headers: { "ngrok-skip-browser-warning": "true" }
+107:         })
+108:             .then(function(response) { return response.json(); })
+109:             .then(function(data) {
+110:                 progressList.textContent = data.message || "";</pre><strong>Suggested fixed code (starting at line 105):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">105: const sanitizedScanId = encodeURIComponent(scanId); fetch(`${API_BASE_URL}/scan-status?scan_id=${sanitizedScanId}`, { headers: { "ngrok-skip-browser-warning": "true" } });</pre></div></td><td>90%</td></tr><tr><td>script.js</td><td>171</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Potential sensitive data exposure in the request body (owner, repo, prompt, scan_id).</td><td>Ensure sensitive data is encrypted or obfuscated before sending it in the request body.<br><a href="#" onclick="document.getElementById('details-10').style.display = document.getElementById('details-10').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-10" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 171: REPLACE</div><strong>Original code (lines 166+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">166:         method: "POST",
+167:         headers: {
+168:             "Content-Type": "application/json",
+169:             "ngrok-skip-browser-warning": "true"
+170:         },
+171:         body: JSON.stringify({ owner: DEFAULT_OWNER, repo: repo, prompt: prompt, scan_id: currentScanId })
+172:     })
+173:     .then(function(response) {
+174:         return response.json();
+175:     })
+176:     .then(function(data) {</pre><strong>Suggested fixed code (starting at line 171):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">171: body: JSON.stringify({ owner: DEFAULT_OWNER, repo: repo, prompt: btoa(prompt), scan_id: currentScanId })</pre></div></td><td>85%</td></tr><tr><td>script.js</td><td>208</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Error messages may expose sensitive information to the user.</td><td>Log detailed error messages to the server and show generic error messages to the user.<br><a href="#" onclick="document.getElementById('details-11').style.display = document.getElementById('details-11').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-11" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 208-213: MODIFY</div><strong>Original code (lines 203+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">203:                 reportLinkEl.href = data.report_url;
+204:                 reportLinkEl.textContent = "Open Report (may still be deploying - retry if blank)";
+205:             }
+206:         }, 12);
+207:     })
+208:     .catch(function(error) {
+209:         stopScanTimer();
+210:         stopProgressPolling();
+211:         scanButton.disabled = false;
+212:         scanButton.textContent = "Run Scan Now";
+213:         statusDiv.textContent = "Request failed: " + error;
+214:     });
+215: }
+216: 
+217: loadRepoDropdown();
+218: loadSavedPrompts();</pre><strong>Suggested fixed code (starting at line 208):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">208: statusDiv.textContent = "An error occurred while processing your request. Please try again later.";</pre></div></td><td>90%</td></tr></table></body></html>
