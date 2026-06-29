@@ -1,0 +1,78 @@
+<html><head><title>AI Code Review Report</title><style>body{font-family:Arial,sans-serif;margin:40px;}h1{color:#333;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ccc;padding:10px;text-align:left;vertical-align:top;}th{background-color:#f2f2f2;}</style></head><body><h1>AI Code Review Report</h1><div style="background-color:#dc2626; color:white; padding:24px; border-radius:8px; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between;"><div><div style="font-size:14px; opacity:0.9;">Security Score</div><div style="font-size:42px; font-weight:bold;">0/100</div></div><div style="font-size:64px; font-weight:bold;">F</div></div><div style="margin-bottom:16px; font-size:14px; color:#555;">Critical: 0 &nbsp;|&nbsp; High: 5 &nbsp;|&nbsp; Medium: 3 &nbsp;|&nbsp; Low: 1</div><p>Total findings: 9</p><table><tr><th>File</th><th>Line</th><th>Severity</th><th>Issue</th><th>Suggested Fix</th><th>Confidence</th></tr><tr><td>.gitignore</td><td>6</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Specific file patterns like 'backend/reports/*.html' may unintentionally exclude important files from version control.</td><td>Ensure that only temporary or auto-generated files are excluded by refining the pattern or adding exceptions.<br><a href="#" onclick="document.getElementById('details-0').style.display = document.getElementById('details-0').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-0" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 6: REPLACE</div><strong>Original code (lines 1+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: venv/
+2: .env
+3: __pycache__/
+4: *.pyc
+5: .DS_Store
+6: backend/reports/*.html
+7: </pre><strong>Suggested fixed code (starting at line 6):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">6: backend/reports/*.html
+7: !backend/reports/important.html</pre></div></td><td>85%</td></tr><tr><td>backend/app.py</td><td>9</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Using subprocess without proper sanitization can lead to command injection vulnerabilities.</td><td>Use the `subprocess.run` method with a list of arguments instead of a single string to avoid shell injection risks.<br><a href="#" onclick="document.getElementById('details-1').style.display = document.getElementById('details-1').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-1" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 9: REPLACE</div><strong>Original code (lines 4+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">4: from dotenv import load_dotenv
+5: 
+6: load_dotenv()
+7: import requests
+8: import json
+9: import subprocess
+10: import threading
+11: from datetime import datetime
+12: from github_client import get_repo_files, get_file_content, get_pr_files, create_workflow_file, list_user_repos, post_pr_comment, set_repo_homepage
+13: 
+14: NGROK_BASE_URL = "https://ogle-gratified-imperial.ngrok-free.dev"</pre><strong>Suggested fixed code (starting at line 9):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">9: import shlex
+10: subprocess.run(["git", "add", filename], cwd=REPORTS_REPO_PATH, check=True)</pre></div></td><td>95%</td></tr><tr><td>backend/app.py</td><td>81</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>The timeout for the `requests.post` call is set to 60 seconds, which might be too high and could lead to resource exhaustion.</td><td>Reduce the timeout to a more reasonable value, such as 10 seconds, to prevent long waits in case of server issues.<br><a href="#" onclick="document.getElementById('details-2').style.display = document.getElementById('details-2').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-2" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 81: REPLACE</div><strong>Original code (lines 76+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">76:     url = AZURE_ENDPOINT + "/openai/deployments/" + DEPLOYMENT + "/chat/completions?api-version=2024-02-15-preview"
+77:     headers = {"api-key": AZURE_KEY, "Content-Type": "application/json"}
+78:     payload = {"messages": [{"role": "user", "content": prompt}], "temperature": 0.2, "max_tokens": 1200}
+79: 
+80:     try:
+81:         response = requests.post(url, headers=headers, json=payload, timeout=60)
+82:         data = response.json()
+83:         review_text = data["choices"][0]["message"]["content"]
+84:         review_text = review_text.replace("```json", "").replace("```", "").strip()
+85:         review_json = json.loads(review_text)
+86:         findings = review_json.get("findings", [])</pre><strong>Suggested fixed code (starting at line 81):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">81: response = requests.post(url, headers=headers, json=payload, timeout=10)</pre></div></td><td>90%</td></tr><tr><td>backend/app.py</td><td>84</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>The `replace` method on `review_text` could unintentionally remove valid JSON content, leading to parsing errors.</td><td>Use a more robust method to handle code block delimiters, such as regex or strict checks.<br><a href="#" onclick="document.getElementById('details-3').style.display = document.getElementById('details-3').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-3" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 84: REPLACE</div><strong>Original code (lines 79+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">79: 
+80:     try:
+81:         response = requests.post(url, headers=headers, json=payload, timeout=60)
+82:         data = response.json()
+83:         review_text = data["choices"][0]["message"]["content"]
+84:         review_text = review_text.replace("```json", "").replace("```", "").strip()
+85:         review_json = json.loads(review_text)
+86:         findings = review_json.get("findings", [])
+87:         for finding in findings:
+88:             finding["original_code_full"] = code
+89:             if "end_line" not in finding:</pre><strong>Suggested fixed code (starting at line 84):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">84: review_text = review_text.strip('').strip('').strip()</pre></div></td><td>90%</td></tr><tr><td>backend/app.py</td><td>416</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Running the Flask app in debug mode exposes it to potential security risks in production.</td><td>Set `debug` to `False` or use an environment variable to control the debug mode.<br><a href="#" onclick="document.getElementById('details-4').style.display = document.getElementById('details-4').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-4" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 416: REPLACE</div><strong>Original code (lines 411+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">411:         return {"repos": repos}
+412:     except Exception as e:
+413:         return {"error": "Could not list repos: " + str(e)}, 500
+414: 
+415: 
+416: if __name__ == "__main__":
+417:     app.run(debug=True, port=8000)
+418: </pre><strong>Suggested fixed code (starting at line 416):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">416: app.run(debug=os.getenv('FLASK_DEBUG', 'False') == 'True', port=8000)</pre></div></td><td>95%</td></tr><tr><td>backend/app.py</td><td>219</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>The `subprocess.run` calls for Git commands do not handle errors securely and could expose sensitive information.</td><td>Add error handling and ensure sensitive data is not exposed in logs.<br><a href="#" onclick="document.getElementById('details-5').style.display = document.getElementById('details-5').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-5" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 219-222: REPLACE</div><strong>Original code (lines 214+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">214:         f.write(html)
+215: 
+216:     report_url = GITHUB_PAGES_BASE_URL + "/" + filename
+217: 
+218:     try:
+219:         subprocess.run(["git", "add", filename], cwd=REPORTS_REPO_PATH, check=True)
+220:         subprocess.run(["git", "commit", "-m", "Add report " + filename], cwd=REPORTS_REPO_PATH, check=True)
+221:         subprocess.run(["git", "pull", "--rebase", "origin", "main"], cwd=REPORTS_REPO_PATH, check=True)
+222:         subprocess.run(["git", "push"], cwd=REPORTS_REPO_PATH, check=True)
+223:         publish_status = "Published successfully."
+224: 
+225:         try:
+226:             set_repo_homepage("vanshsethi217", "ai-review-reports", report_url)
+227:         except Exception:</pre><strong>Suggested fixed code (starting at line 219):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">219: try:
+220:     subprocess.run(["git", "add", filename], cwd=REPORTS_REPO_PATH, check=True)
+221: except subprocess.CalledProcessError as e:
+222:     raise RuntimeError("Git add failed") from e</pre></div></td><td>90%</td></tr><tr><td>backend/github_client.py</td><td>0</td><td><span style="background-color:#5bc0de; color:white; padding:4px 8px; border-radius:4px;">Low</span></td><td>Could not complete AI review of this file: Expecting ',' delimiter: line 111 column 23 (char 5085)</td><td>N/A</td><td>0%</td></tr><tr><td>backend/requirements.txt</td><td>2</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>The certifi version specified (2026.6.17) is invalid as it references a future date. This could indicate a typo or an incorrect version.</td><td>Update the certifi version to a valid and existing release, such as the latest stable version.<br><a href="#" onclick="document.getElementById('details-7').style.display = document.getElementById('details-7').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-7" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 2: REPLACE</div><strong>Original code (lines 1+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: blinker==1.9.0
+2: certifi==2026.6.17
+3: charset-normalizer==3.4.7
+4: click==8.1.8
+5: Flask==3.1.3
+6: flask-cors==6.0.5
+7: idna==3.18</pre><strong>Suggested fixed code (starting at line 2):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">2: certifi==2023.7.22</pre></div></td><td>95%</td></tr><tr><td>backend/requirements.txt</td><td>12</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>The python-dotenv version specified (1.2.1) is outdated and may contain security vulnerabilities.</td><td>Update python-dotenv to the latest stable version to ensure security patches are applied.<br><a href="#" onclick="document.getElementById('details-8').style.display = document.getElementById('details-8').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-8" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 12: REPLACE</div><strong>Original code (lines 7+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">7: idna==3.18
+8: importlib_metadata==8.7.1
+9: itsdangerous==2.2.0
+10: Jinja2==3.1.6
+11: MarkupSafe==3.0.3
+12: python-dotenv==1.2.1
+13: requests==2.32.5
+14: typing_extensions==4.15.0
+15: urllib3==2.6.3
+16: Werkzeug==3.1.8
+17: zipp==3.23.1</pre><strong>Suggested fixed code (starting at line 12):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">12: python-dotenv==1.0.0</pre></div></td><td>90%</td></tr></table></body></html>
