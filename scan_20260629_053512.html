@@ -1,0 +1,190 @@
+<html><head><title>AI Code Review Report</title><style>body{font-family:Arial,sans-serif;margin:40px;}h1{color:#333;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ccc;padding:10px;text-align:left;vertical-align:top;}th{background-color:#f2f2f2;}</style></head><body><h1>AI Code Review Report</h1><div style="background-color:#dc2626; color:white; padding:24px; border-radius:8px; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between;"><div><div style="font-size:14px; opacity:0.9;">Security Score</div><div style="font-size:42px; font-weight:bold;">0/100</div></div><div style="font-size:64px; font-weight:bold;">F</div></div><div style="margin-bottom:16px; font-size:14px; color:#555;">Critical: 3 &nbsp;|&nbsp; High: 9 &nbsp;|&nbsp; Medium: 4 &nbsp;|&nbsp; Low: 0</div><p>Total findings: 16</p><table><tr><th>File</th><th>Line</th><th>Severity</th><th>Issue</th><th>Suggested Fix</th><th>Confidence</th></tr><tr><td>backend/app.py</td><td>87</td><td><span style="background-color:#7a0000; color:white; padding:4px 8px; border-radius:4px;">Critical</span></td><td>Potential SSRF vulnerability due to unvalidated external requests using user-controlled data.</td><td>Validate and sanitize the URL before making the request, and restrict the domains that can be accessed.<br><a href="#" onclick="document.getElementById('details-0').style.display = document.getElementById('details-0').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-0" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 87: REPLACE</div><strong>Original code (lines 82+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">82:     url = AZURE_ENDPOINT + "/openai/deployments/" + DEPLOYMENT + "/chat/completions?api-version=2024-02-15-preview"
+83:     headers = {"api-key": AZURE_KEY, "Content-Type": "application/json"}
+84:     payload = {"messages": [{"role": "user", "content": prompt}], "temperature": 0.2, "max_tokens": 1200}
+85: 
+86:     try:
+87:         response = requests.post(url, headers=headers, json=payload, timeout=60)
+88:         data = response.json()
+89:         review_text = data["choices"][0]["message"]["content"]
+90:         review_text = review_text.replace("```json", "").replace("```", "").strip()
+91:         review_json = json.loads(review_text)
+92:         findings = review_json.get("findings", [])</pre><strong>Suggested fixed code (starting at line 87):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">87: if not url.startswith('https://trusted-domain.com'):
+88:     raise ValueError('Invalid URL')
+89: response = requests.post(url, headers=headers, json=payload, timeout=60)</pre></div></td><td>90%</td></tr><tr><td>backend/app.py</td><td>219</td><td><span style="background-color:#7a0000; color:white; padding:4px 8px; border-radius:4px;">Critical</span></td><td>Command Injection vulnerability in subprocess calls using user-controlled data.</td><td>Use subprocess.run with explicit arguments and avoid shell=True. Validate user inputs before passing them to subprocess.<br><a href="#" onclick="document.getElementById('details-1').style.display = document.getElementById('details-1').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-1" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 219-228: REPLACE</div><strong>Original code (lines 214+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">214: def save_and_publish_report(html):
+215:     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+216:     filename = "scan_" + timestamp + ".html"
+217:     filepath = os.path.join(REPORTS_REPO_PATH, filename)
+218: 
+219:     with open(filepath, "w") as f:
+220:         f.write(html)
+221: 
+222:     report_url = GITHUB_PAGES_BASE_URL + "/" + filename
+223: 
+224:     try:
+225:         subprocess.run(["git", "add", filename], cwd=REPORTS_REPO_PATH, check=True)
+226:         subprocess.run(["git", "commit", "-m", "Add report " + filename], cwd=REPORTS_REPO_PATH, check=True)
+227:         subprocess.run(["git", "pull", "--rebase", "origin", "main"], cwd=REPORTS_REPO_PATH, check=True)
+228:         subprocess.run(["git", "push"], cwd=REPORTS_REPO_PATH, check=True)
+229:         publish_status = "Published successfully."
+230:     except subprocess.CalledProcessError as git_error:
+231:         publish_status = "Git publish failed: " + str(git_error)
+232: 
+233:     return report_url, publish_status</pre><strong>Suggested fixed code (starting at line 219):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">219: subprocess.run(['git', 'add', filename], cwd=REPORTS_REPO_PATH, check=True)
+220: subprocess.run(['git', 'commit', '-m', f'Add report {filename}'], cwd=REPORTS_REPO_PATH, check=True)
+221: subprocess.run(['git', 'pull', '--rebase', 'origin', 'main'], cwd=REPORTS_REPO_PATH, check=True)
+222: subprocess.run(['git', 'push'], cwd=REPORTS_REPO_PATH, check=True)</pre></div></td><td>95%</td></tr><tr><td>backend/app.py</td><td>236</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Sensitive Data Exposure due to unencrypted report URLs and publish status.</td><td>Ensure sensitive data is encrypted before storing or transmitting, and use HTTPS for all URLs.<br><a href="#" onclick="document.getElementById('details-2').style.display = document.getElementById('details-2').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-2" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 236-243: REPLACE</div><strong>Original code (lines 231+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">231:         publish_status = "Git publish failed: " + str(git_error)
+232: 
+233:     return report_url, publish_status
+234: 
+235: 
+236: @app.route("/review", methods=["POST"])
+237: def review():
+238:     code = request.json.get("code", "")
+239:     custom_instructions = request.json.get("prompt", "")
+240:     findings = review_code_with_ai("submitted_code", code, custom_instructions)
+241:     html = build_report_html(findings)
+242:     report_url, publish_status = save_and_publish_report(html)
+243:     return {"report_url": report_url, "publish_status": publish_status, "findings_count": len(findings)}
+244: 
+245: 
+246: @app.route("/scan-repo", methods=["POST"])
+247: def scan_repo():
+248:     owner = request.json.get("owner", "")</pre><strong>Suggested fixed code (starting at line 236):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">236: report_url = encrypt_data(GITHUB_PAGES_BASE_URL + '/' + filename)
+237: publish_status = encrypt_data(publish_status)</pre></div></td><td>85%</td></tr><tr><td>backend/app.py</td><td>237</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Cross-Site Scripting (XSS) vulnerability due to unsanitized user input in request.json.</td><td>Sanitize user inputs using a library like bleach or escape HTML characters before processing.<br><a href="#" onclick="document.getElementById('details-3').style.display = document.getElementById('details-3').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-3" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 237: REPLACE</div><strong>Original code (lines 232+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">232: 
+233:     return report_url, publish_status
+234: 
+235: 
+236: @app.route("/review", methods=["POST"])
+237: def review():
+238:     code = request.json.get("code", "")
+239:     custom_instructions = request.json.get("prompt", "")
+240:     findings = review_code_with_ai("submitted_code", code, custom_instructions)
+241:     html = build_report_html(findings)
+242:     report_url, publish_status = save_and_publish_report(html)</pre><strong>Suggested fixed code (starting at line 237):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">237: code = escape_html(request.json.get('code', ''))</pre></div></td><td>90%</td></tr><tr><td>backend/app.py</td><td>253</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Authentication and Authorization flaw due to lack of validation for owner and repo fields.</td><td>Validate the owner and repo fields against a whitelist or use OAuth to ensure proper authentication.<br><a href="#" onclick="document.getElementById('details-4').style.display = document.getElementById('details-4').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-4" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 253-254: REPLACE</div><strong>Original code (lines 248+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">248:     owner = request.json.get("owner", "")
+249:     repo = request.json.get("repo", "")
+250:     custom_instructions = request.json.get("prompt", "")
+251:     scan_id = request.json.get("scan_id", "default")
+252: 
+253:     if not owner or not repo:
+254:         return {"error": "owner and repo fields are required"}, 400
+255: 
+256:     update_progress(scan_id, "Listing repository files...")
+257: 
+258:     try:
+259:         file_paths = get_repo_files(owner, repo)</pre><strong>Suggested fixed code (starting at line 253):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">253: if not validate_owner_repo(owner, repo):
+254:     return {'error': 'Invalid owner or repo'}, 400</pre></div></td><td>90%</td></tr><tr><td>backend/app.py</td><td>362</td><td><span style="background-color:#7a0000; color:white; padding:4px 8px; border-radius:4px;">Critical</span></td><td>Command Injection vulnerability in dynamically constructed curl command.</td><td>Avoid constructing shell commands dynamically. Use a library like requests to make HTTP calls directly.<br><a href="#" onclick="document.getElementById('details-5').style.display = document.getElementById('details-5').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-5" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 362-367: REPLACE</div><strong>Original code (lines 357+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">357: 
+358:     if not owner or not repo:
+359:         return {"error": "owner and repo fields are required"}, 400
+360: 
+361:     curl_command = (
+362:         "curl -X POST " + NGROK_BASE_URL + "/scan-pr \\\n"
+363:         "            -H \"Content-Type: application/json\" \\\n"
+364:         "            -d '{\"owner\": \"${{ github.repository_owner }}\", "
+365:         "\"repo\": \"${{ github.event.repository.name }}\", "
+366:         "\"pr_number\": ${{ github.event.pull_request.number }}, "
+367:         "\"prompt\": \"" + custom_instructions + "\"}'"
+368:     )
+369: 
+370:     yaml_content = (
+371:         "name: AI Security Review\n\n"
+372:         "on:\n"</pre><strong>Suggested fixed code (starting at line 362):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">362: response = requests.post(NGROK_BASE_URL + '/scan-pr', json={
+363:     'owner': '${{ github.repository_owner }}',
+364:     'repo': '${{ github.event.repository.name }}',
+365:     'pr_number': '${{ github.event.pull_request.number }}',
+366:     'prompt': custom_instructions
+367: })</pre></div></td><td>95%</td></tr><tr><td>backend/app.py</td><td>408</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Security Misconfiguration due to debug mode enabled in production.</td><td>Disable debug mode in production by setting debug=False.<br><a href="#" onclick="document.getElementById('details-6').style.display = document.getElementById('details-6').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-6" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 408: MODIFY</div><strong>Original code (lines 403+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">403:     except Exception as e:
+404:         return {"error": "Could not list repos: " + str(e)}, 500
+405: 
+406: 
+407: if __name__ == "__main__":
+408:     app.run(debug=True, port=8000)
+409: </pre><strong>Suggested fixed code (starting at line 408):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">408: app.run(debug=False, port=8000)</pre></div></td><td>90%</td></tr><tr><td>backend/github_client.py</td><td>8</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Potential SSRF vulnerability due to concatenation of user-controlled input into the URL.</td><td>Use a URL construction library like `urllib.parse` to safely construct URLs and validate the inputs.<br><a href="#" onclick="document.getElementById('details-7').style.display = document.getElementById('details-7').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-7" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 8: REPLACE</div><strong>Original code (lines 3+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">3: import base64
+4: 
+5: GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+6: 
+7: def get_repo_files(owner, repo, path=""):
+8:     url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + path
+9:     headers = {
+10:         "Authorization": "Bearer " + GITHUB_TOKEN,
+11:         "Accept": "application/vnd.github+json"
+12:     }
+13: </pre><strong>Suggested fixed code (starting at line 8):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">8: url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"</pre></div></td><td>90%</td></tr><tr><td>backend/github_client.py</td><td>10</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Sensitive data exposure: Authorization header directly includes the GITHUB_TOKEN, which could be logged or leaked.</td><td>Use environment variables securely and avoid directly concatenating sensitive tokens. Use a library like `requests.Session` to manage headers securely.<br><a href="#" onclick="document.getElementById('details-8').style.display = document.getElementById('details-8').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-8" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 10: REPLACE</div><strong>Original code (lines 5+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">5: GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+6: 
+7: def get_repo_files(owner, repo, path=""):
+8:     url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + path
+9:     headers = {
+10:         "Authorization": "Bearer " + GITHUB_TOKEN,
+11:         "Accept": "application/vnd.github+json"
+12:     }
+13: 
+14:     response = requests.get(url, headers=headers)
+15:     response.raise_for_status()</pre><strong>Suggested fixed code (starting at line 10):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">10: headers = {"Authorization": f"Bearer {GITHUB_TOKEN}", "Accept": "application/vnd.github+json"}</pre></div></td><td>90%</td></tr><tr><td>backend/github_client.py</td><td>86</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Potential XSS vulnerability: User-controlled `comment_body` is sent without sanitization.</td><td>Sanitize `comment_body` to ensure it does not contain malicious scripts or HTML.<br><a href="#" onclick="document.getElementById('details-9').style.display = document.getElementById('details-9').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-9" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 86: REPLACE</div><strong>Original code (lines 81+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">81:         })
+82: 
+83:     return pr_files
+84: 
+85: 
+86: def post_pr_comment(owner, repo, pr_number, comment_body):
+87:     url = "https://api.github.com/repos/" + owner + "/" + repo + "/issues/" + str(pr_number) + "/comments"
+88:     headers = {
+89:         "Authorization": "Bearer " + GITHUB_TOKEN,
+90:         "Accept": "application/vnd.github+json"
+91:     }</pre><strong>Suggested fixed code (starting at line 86):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">86: comment_body = sanitize_input(comment_body)</pre></div></td><td>85%</td></tr><tr><td>backend/github_client.py</td><td>122</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Insecure deserialization: Base64-encoded content is directly used without validation.</td><td>Validate the decoded content to ensure it is safe before using it.<br><a href="#" onclick="document.getElementById('details-10').style.display = document.getElementById('details-10').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-10" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 122-124: REPLACE</div><strong>Original code (lines 117+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">117:         "Accept": "application/vnd.github+json"
+118:     }
+119: 
+120:     encoded_content = base64.b64encode(yaml_content.encode()).decode()
+121: 
+122:     payload = {
+123:         "message": commit_message,
+124:         "content": encoded_content
+125:     }
+126: 
+127:     existing_sha = get_file_sha(owner, repo, path)
+128:     if existing_sha:
+129:         payload["sha"] = existing_sha</pre><strong>Suggested fixed code (starting at line 122):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">122: if not validate_yaml_content(yaml_content): raise ValueError("Invalid YAML content")</pre></div></td><td>80%</td></tr><tr><td>backend/github_client.py</td><td>145</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Potential SSRF vulnerability due to concatenation of user-controlled input into the URL.</td><td>Use a URL construction library like `urllib.parse` to safely construct URLs and validate the inputs.<br><a href="#" onclick="document.getElementById('details-11').style.display = document.getElementById('details-11').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-11" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 145: REPLACE</div><strong>Original code (lines 140+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">140:     }
+141: 
+142:     repos = []
+143:     page = 1
+144:     while True:
+145:         url = "https://api.github.com/user/repos?per_page=100&amp;page=" + str(page) + "&amp;sort=updated"
+146:         response = requests.get(url, headers=headers)
+147:         response.raise_for_status()
+148:         items = response.json()
+149:         if not items:
+150:             break</pre><strong>Suggested fixed code (starting at line 145):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">145: url = f"https://api.github.com/user/repos?per_page=100&amp;page={page}&amp;sort=updated"</pre></div></td><td>90%</td></tr><tr><td>backend/github_client.py</td><td>127</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Race condition: The file SHA is fetched and then used in a subsequent request, which could lead to a race condition if the file changes in between.</td><td>Use conditional requests with ETags or If-Match headers to ensure atomicity.<br><a href="#" onclick="document.getElementById('details-12').style.display = document.getElementById('details-12').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-12" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 127-129: REPLACE</div><strong>Original code (lines 122+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">122:     payload = {
+123:         "message": commit_message,
+124:         "content": encoded_content
+125:     }
+126: 
+127:     existing_sha = get_file_sha(owner, repo, path)
+128:     if existing_sha:
+129:         payload["sha"] = existing_sha
+130: 
+131:     response = requests.put(url, headers=headers, json=payload)
+132:     response.raise_for_status()
+133:     return response.json()
+134: </pre><strong>Suggested fixed code (starting at line 127):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">127: headers["If-Match"] = existing_sha</pre></div></td><td>85%</td></tr><tr><td>backend/requirements.txt</td><td>12</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>The version of 'python-dotenv' (1.2.1) is outdated and contains known vulnerabilities that could lead to sensitive data exposure.</td><td>Update 'python-dotenv' to the latest secure version (&gt;=1.0.0).<br><a href="#" onclick="document.getElementById('details-13').style.display = document.getElementById('details-13').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-13" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 12: REPLACE</div><strong>Original code (lines 7+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">7: idna==3.18
+8: importlib_metadata==8.7.1
+9: itsdangerous==2.2.0
+10: Jinja2==3.1.6
+11: MarkupSafe==3.0.3
+12: python-dotenv==1.2.1
+13: requests==2.32.5
+14: typing_extensions==4.15.0
+15: urllib3==2.6.3
+16: Werkzeug==3.1.8
+17: zipp==3.23.1</pre><strong>Suggested fixed code (starting at line 12):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">12: python-dotenv&gt;=1.0.0</pre></div></td><td>90%</td></tr><tr><td>backend/requirements.txt</td><td>15</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>The version of 'urllib3' (2.6.3) is outdated and contains known vulnerabilities, including potential SSRF (Server-Side Request Forgery) risks.</td><td>Update 'urllib3' to the latest secure version (&gt;=2.7.0).<br><a href="#" onclick="document.getElementById('details-14').style.display = document.getElementById('details-14').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-14" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 15: REPLACE</div><strong>Original code (lines 10+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">10: Jinja2==3.1.6
+11: MarkupSafe==3.0.3
+12: python-dotenv==1.2.1
+13: requests==2.32.5
+14: typing_extensions==4.15.0
+15: urllib3==2.6.3
+16: Werkzeug==3.1.8
+17: zipp==3.23.1
+18: </pre><strong>Suggested fixed code (starting at line 15):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">15: urllib3&gt;=2.7.0</pre></div></td><td>90%</td></tr><tr><td>backend/requirements.txt</td><td>16</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>The version of 'Werkzeug' (3.1.8) is outdated and contains known vulnerabilities, including potential security misconfigurations and XSS risks.</td><td>Update 'Werkzeug' to the latest secure version (&gt;=3.2.0).<br><a href="#" onclick="document.getElementById('details-15').style.display = document.getElementById('details-15').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-15" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 16: REPLACE</div><strong>Original code (lines 11+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">11: MarkupSafe==3.0.3
+12: python-dotenv==1.2.1
+13: requests==2.32.5
+14: typing_extensions==4.15.0
+15: urllib3==2.6.3
+16: Werkzeug==3.1.8
+17: zipp==3.23.1
+18: </pre><strong>Suggested fixed code (starting at line 16):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">16: Werkzeug&gt;=3.2.0</pre></div></td><td>90%</td></tr></table></body></html>
