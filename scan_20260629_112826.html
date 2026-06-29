@@ -1,0 +1,147 @@
+<html><head><title>AI Code Review Report</title><style>body{font-family:Arial,sans-serif;margin:40px;}h1{color:#333;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ccc;padding:10px;text-align:left;vertical-align:top;}th{background-color:#f2f2f2;}</style></head><body><h1>AI Code Review Report</h1><div style="background-color:#dc2626; color:white; padding:24px; border-radius:8px; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between;"><div><div style="font-size:14px; opacity:0.9;">Security Score</div><div style="font-size:42px; font-weight:bold;">0/100</div></div><div style="font-size:64px; font-weight:bold;">F</div></div><div style="margin-bottom:16px; font-size:14px; color:#555;">Critical: 0 &nbsp;|&nbsp; High: 4 &nbsp;|&nbsp; Medium: 5 &nbsp;|&nbsp; Low: 2</div><p>Total findings: 11</p><table><tr><th>File</th><th>Line</th><th>Severity</th><th>Issue</th><th>Suggested Fix</th><th>Confidence</th></tr><tr><td>index.html</td><td>26</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Inline event handlers (e.g., onclick) can lead to security vulnerabilities such as XSS attacks and are less efficient than using event listeners.</td><td>Replace inline event handlers with JavaScript event listeners in the external script file.<br><a href="#" onclick="document.getElementById('details-0').style.display = document.getElementById('details-0').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-0" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 26: MODIFY</div><strong>Original code (lines 21+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">21:         &lt;div class="form-group"&gt;
+22:             &lt;label for="prompt"&gt;Custom Review Focus (optional)&lt;/label&gt;
+23:             &lt;textarea id="prompt" rows="3" placeholder="e.g. Focus only on SQL injection and authentication issues"&gt;&lt;/textarea&gt;
+24:             &lt;div class="preset-label"&gt;Suggested prompts (click to use):&lt;/div&gt;
+25:             &lt;div class="preset-buttons"&gt;
+26:                 &lt;button type="button" class="preset-btn" onclick="setPreset('SQL injection and database security')"&gt;SQL Injection&lt;/button&gt;
+27:                 &lt;button type="button" class="preset-btn" onclick="setPreset('OWASP Top 10 vulnerabilities')"&gt;OWASP Top 10&lt;/button&gt;
+28:                 &lt;button type="button" class="preset-btn" onclick="setPreset('performance and code efficiency')"&gt;Performance&lt;/button&gt;
+29:                 &lt;button type="button" class="preset-btn" onclick="setPreset('')"&gt;Clear&lt;/button&gt;
+30:             &lt;/div&gt;
+31:             &lt;div class="saved-prompts-row"&gt;</pre><strong>Suggested fixed code (starting at line 26):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">26: &lt;button type="button" class="preset-btn" data-preset="SQL injection and database security"&gt;SQL Injection&lt;/button&gt;</pre></div></td><td>90%</td></tr><tr><td>index.html</td><td>49</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>External script inclusion does not specify the 'integrity' and 'crossorigin' attributes, which can prevent certain types of attacks such as script tampering.</td><td>Add 'integrity' and 'crossorigin' attributes to the script tag to ensure the script's integrity.<br><a href="#" onclick="document.getElementById('details-1').style.display = document.getElementById('details-1').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-1" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 49: REPLACE</div><strong>Original code (lines 44+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">44:             &lt;p id="resultSummary"&gt;&lt;/p&gt;
+45:             &lt;a id="reportLink" href="#" target="_blank" class="report-link"&gt;Open Report&lt;/a&gt;
+46:         &lt;/div&gt;
+47:     &lt;/div&gt;
+48: 
+49:     &lt;script src="script.js"&gt;&lt;/script&gt;
+50: &lt;/body&gt;
+51: &lt;/html&gt;
+52: </pre><strong>Suggested fixed code (starting at line 49):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">49: &lt;script src="script.js" integrity="sha384-abc123" crossorigin="anonymous"&gt;&lt;/script&gt;</pre></div></td><td>85%</td></tr><tr><td>index.html</td><td>45</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>The 'href' attribute of the 'reportLink' anchor tag is set to '#', which can lead to unintended behavior or vulnerabilities if dynamically updated without proper sanitization.</td><td>Ensure the 'href' attribute is dynamically updated with sanitized URLs in the script file.<br><a href="#" onclick="document.getElementById('details-2').style.display = document.getElementById('details-2').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-2" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 45: MODIFY</div><strong>Original code (lines 40+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">40:         &lt;div id="progressList" class="progress-list"&gt;&lt;/div&gt;
+41: 
+42:         &lt;div id="resultBox" class="result-box hidden"&gt;
+43:             &lt;h3&gt;Scan Complete&lt;/h3&gt;
+44:             &lt;p id="resultSummary"&gt;&lt;/p&gt;
+45:             &lt;a id="reportLink" href="#" target="_blank" class="report-link"&gt;Open Report&lt;/a&gt;
+46:         &lt;/div&gt;
+47:     &lt;/div&gt;
+48: 
+49:     &lt;script src="script.js"&gt;&lt;/script&gt;
+50: &lt;/body&gt;</pre><strong>Suggested fixed code (starting at line 45):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">45: &lt;a id="reportLink" href="" target="_blank" class="report-link"&gt;Open Report&lt;/a&gt;</pre></div></td><td>90%</td></tr><tr><td>script.js</td><td>15</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Hardcoded API_BASE_URL is insecure and may expose the application to attacks if the URL is compromised.</td><td>Use environment variables or a configuration file to store the API base URL securely.<br><a href="#" onclick="document.getElementById('details-3').style.display = document.getElementById('details-3').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-3" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 15: REPLACE</div><strong>Original code (lines 10+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">10:     document.getElementById("prompt").value = text;
+11: }
+12: 
+13: function loadRepoDropdown() {
+14:     const repoSelect = document.getElementById("repo");
+15:     fetch(API_BASE_URL + "/list-repos", {
+16:         headers: { "ngrok-skip-browser-warning": "true" }
+17:     })
+18:         .then(function(response) { return response.json(); })
+19:         .then(function(data) {
+20:             if (data.error || !data.repos) {</pre><strong>Suggested fixed code (starting at line 15):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">15: const API_BASE_URL = process.env.API_BASE_URL || "https://ogle-gratified-imperial.ngrok-free.dev";</pre></div></td><td>90%</td></tr><tr><td>script.js</td><td>108</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Error handling in the catch block is empty, which can lead to silent failures and debugging difficulties.</td><td>Log the error or display a user-friendly message to indicate the failure.<br><a href="#" onclick="document.getElementById('details-4').style.display = document.getElementById('details-4').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-4" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 108-112: REPLACE</div><strong>Original code (lines 103+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">103:     progressList.innerHTML = "";
+104:     progressPollInterval = setInterval(function() {
+105:         fetch(API_BASE_URL + "/scan-status?scan_id=" + scanId, {
+106:             headers: { "ngrok-skip-browser-warning": "true" }
+107:         })
+108:             .then(function(response) { return response.json(); })
+109:             .then(function(data) {
+110:                 progressList.textContent = data.message || "";
+111:             })
+112:             .catch(function() {});
+113:     }, 1000);
+114: }
+115: 
+116: function stopProgressPolling() {
+117:     if (progressPollInterval) {</pre><strong>Suggested fixed code (starting at line 108):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">108: .catch(function(error) { console.error('Progress polling failed:', error); });</pre></div></td><td>95%</td></tr><tr><td>script.js</td><td>128</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Repeated use of setTimeout for retries can lead to unbounded retries and potential resource exhaustion.</td><td>Implement a maximum retry limit with exponential backoff to reduce resource usage.<br><a href="#" onclick="document.getElementById('details-5').style.display = document.getElementById('details-5').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-5" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 128-142: REPLACE</div><strong>Original code (lines 123+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">123: function waitForReportAvailable(reportUrl, onReady, attemptsLeft) {
+124:     if (attemptsLeft &lt;= 0) {
+125:         onReady(false);
+126:         return;
+127:     }
+128:     fetch(reportUrl, { method: "HEAD", cache: "no-store" })
+129:         .then(function(response) {
+130:             if (response.ok) {
+131:                 onReady(true);
+132:             } else {
+133:                 setTimeout(function() {
+134:                     waitForReportAvailable(reportUrl, onReady, attemptsLeft - 1);
+135:                 }, 5000);
+136:             }
+137:         })
+138:         .catch(function() {
+139:             setTimeout(function() {
+140:                 waitForReportAvailable(reportUrl, onReady, attemptsLeft - 1);
+141:             }, 5000);
+142:         });
+143: }
+144: 
+145: function runScan() {
+146:     const repo = document.getElementById("repo").value.trim();
+147:     const prompt = document.getElementById("prompt").value.trim();</pre><strong>Suggested fixed code (starting at line 128):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">128: function waitForReportAvailable(reportUrl, onReady, attemptsLeft) {
+129:     if (attemptsLeft &lt;= 0) {
+130:         onReady(false);
+131:         return;
+132:     }
+133:     fetch(reportUrl, { method: "HEAD", cache: "no-store" })
+134:         .then(function(response) {
+135:             if (response.ok) {
+136:                 onReady(true);
+137:             } else {
+138:                 setTimeout(function() {
+139:                     waitForReportAvailable(reportUrl, onReady, attemptsLeft - 1);
+140:                 }, Math.pow(2, 12 - attemptsLeft) * 1000); // Exponential backoff
+141:             }
+142:         })
+143:         .catch(function() {
+144:             setTimeout(function() {
+145:                 waitForReportAvailable(reportUrl, onReady, attemptsLeft - 1);
+146:             }, Math.pow(2, 12 - attemptsLeft) * 1000); // Exponential backoff
+147:         });
+148: }</pre></div></td><td>90%</td></tr><tr><td>script.js</td><td>171</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Potentially insecure handling of user input in the POST request body without validation.</td><td>Validate and sanitize user input (repo and prompt) before including it in the request body.<br><a href="#" onclick="document.getElementById('details-6').style.display = document.getElementById('details-6').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-6" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 171: MODIFY</div><strong>Original code (lines 166+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">166:         method: "POST",
+167:         headers: {
+168:             "Content-Type": "application/json",
+169:             "ngrok-skip-browser-warning": "true"
+170:         },
+171:         body: JSON.stringify({ owner: DEFAULT_OWNER, repo: repo, prompt: prompt, scan_id: currentScanId })
+172:     })
+173:     .then(function(response) {
+174:         return response.json();
+175:     })
+176:     .then(function(data) {</pre><strong>Suggested fixed code (starting at line 171):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">171: body: JSON.stringify({ owner: DEFAULT_OWNER, repo: sanitizeInput(repo), prompt: sanitizeInput(prompt), scan_id: currentScanId })</pre></div></td><td>85%</td></tr><tr><td>script.js</td><td>39</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Parsing localStorage data without validation can lead to runtime errors if the data is corrupted.</td><td>Add validation to ensure the parsed data is in the expected format.<br><a href="#" onclick="document.getElementById('details-7').style.display = document.getElementById('details-7').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-7" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 39: REPLACE</div><strong>Original code (lines 34+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">34:         });
+35: }
+36: 
+37: function loadSavedPrompts() {
+38:     const listDiv = document.getElementById("savedPromptsList");
+39:     const saved = JSON.parse(localStorage.getItem("savedPrompts") || "[]");
+40:     listDiv.innerHTML = "";
+41:     saved.forEach(function(promptText, index) {
+42:         const chip = document.createElement("span");
+43:         chip.className = "saved-prompt-chip";
+44:         const shortLabel = promptText.length &gt; 30 ? promptText.substring(0, 30) + "..." : promptText;</pre><strong>Suggested fixed code (starting at line 39):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">39: const saved = Array.isArray(JSON.parse(localStorage.getItem("savedPrompts") || "[]")) ? JSON.parse(localStorage.getItem("savedPrompts")) : [];</pre></div></td><td>90%</td></tr><tr><td>style.css</td><td>46</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>The selector 'input[type="text"]' does not include other common input types like 'email', 'password', etc., which may lead to inconsistent styling.</td><td>Expand the selector to include other common input types for consistency.<br><a href="#" onclick="document.getElementById('details-8').style.display = document.getElementById('details-8').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-8" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 46: MODIFY</div><strong>Original code (lines 41+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">41:     font-size: 13px;
+42:     font-weight: 600;
+43:     color: #333;
+44: }
+45: 
+46: input[type="text"], textarea, select {
+47:     width: 100%;
+48:     padding: 10px;
+49:     border: 1px solid #ccc;
+50:     border-radius: 4px;
+51:     font-size: 14px;</pre><strong>Suggested fixed code (starting at line 46):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">46: input[type="text"], input[type="email"], input[type="password"], textarea, select {</pre></div></td><td>95%</td></tr><tr><td>style.css</td><td>128</td><td><span style="background-color:#5bc0de; color:white; padding:4px 8px; border-radius:4px;">Low</span></td><td>The button width is set to 100%, which may not be ideal for all layouts and could cause layout issues in some cases.</td><td>Consider using 'max-width' instead of 'width' to allow buttons to adapt better to different layouts.<br><a href="#" onclick="document.getElementById('details-9').style.display = document.getElementById('details-9').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-9" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 128: MODIFY</div><strong>Original code (lines 123+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">123:     color: #b45309;
+124:     font-weight: bold;
+125:     margin-left: 4px;
+126: }
+127: 
+128: button {
+129:     width: 100%;
+130:     padding: 12px;
+131:     background-color: #2563eb;
+132:     color: white;
+133:     border: none;</pre><strong>Suggested fixed code (starting at line 128):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">128: button { max-width: 100%;</pre></div></td><td>90%</td></tr><tr><td>style.css</td><td>161</td><td><span style="background-color:#5bc0de; color:white; padding:4px 8px; border-radius:4px;">Low</span></td><td>The 'word-break: break-all;' property can lead to poor readability by breaking words arbitrarily.</td><td>Use 'word-break: break-word;' or 'overflow-wrap: break-word;' for better readability.<br><a href="#" onclick="document.getElementById('details-10').style.display = document.getElementById('details-10').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-10" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 161: MODIFY</div><strong>Original code (lines 156+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">156: .progress-list {
+157:     margin-top: 6px;
+158:     font-size: 12px;
+159:     color: #888;
+160:     font-family: monospace;
+161:     word-break: break-all;
+162: }
+163: 
+164: .result-box {
+165:     margin-top: 20px;
+166:     padding: 16px;</pre><strong>Suggested fixed code (starting at line 161):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">161: word-break: break-word;</pre></div></td><td>90%</td></tr></table></body></html>
