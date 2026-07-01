@@ -1,0 +1,160 @@
+<html><head><title>AI Code Review Report</title><style>body{font-family:Arial,sans-serif;margin:40px;}h1{color:#333;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ccc;padding:10px;text-align:left;vertical-align:top;}th{background-color:#f2f2f2;}a{color:#2563eb;}</style></head><body><h1>AI Code Review Report</h1><div style="background-color:#ea580c; color:white; padding:24px; border-radius:8px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between;"><div><div style="font-size:14px; opacity:0.9;">Security Score</div><div style="font-size:42px; font-weight:bold;">54/100</div></div><div style="font-size:64px; font-weight:bold;">D</div></div><div style="background:#f8f9fa; border:1px solid #e2e8f0; border-radius:8px; padding:12px 16px; margin-bottom:16px; font-size:12px; color:#555;"><strong>Score Guide:</strong> &nbsp;<span style="color:#16a34a">&#9632; A (90-100): Excellent &mdash; minimal/no issues</span> &nbsp;|&nbsp; <span style="color:#65a30d">&#9632; B (75-89): Good &mdash; minor issues only</span> &nbsp;|&nbsp; <span style="color:#ca8a04">&#9632; C (60-74): Fair &mdash; moderate issues</span> &nbsp;|&nbsp; <span style="color:#ea580c">&#9632; D (40-59): Poor &mdash; significant issues</span> &nbsp;|&nbsp; <span style="color:#dc2626">&#9632; F (0-39): Critical &mdash; severe vulnerabilities</span></div><div style="margin-bottom:16px; font-size:14px; color:#555;">Critical: 2 &nbsp;|&nbsp; High: 6 &nbsp;|&nbsp; Medium: 5 &nbsp;|&nbsp; Low: 1</div><p>Total findings: 14</p><table><tr><th>File</th><th>Line</th><th>Severity</th><th>Issue</th><th>Suggested Fix</th><th>Confidence</th></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/app.py</a></td><td>14</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Hardcoded NGROK_BASE_URL exposes the application to potential misuse or unauthorized access.</td><td>Store the NGROK_BASE_URL in an environment variable and retrieve it securely.<br><a href="#" onclick="document.getElementById('details-0').style.display = document.getElementById('details-0').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-0" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 14: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py#L14" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 14)</a><br><strong>Original code (lines 9+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">9: import subprocess
+10: import threading
+11: from datetime import datetime
+12: from github_client import get_repo_files, get_file_content, get_pr_files, create_workflow_file, list_user_repos, post_pr_comment, set_repo_homepage
+13: 
+14: NGROK_BASE_URL = "https://ogle-gratified-imperial.ngrok-free.dev"
+15: 
+16: app = Flask(__name__)
+17: CORS(app)
+18: 
+19: AZURE_ENDPOINT = os.getenv("AZURE_ENDPOINT")</pre><strong>Suggested fixed code (starting at line 14):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">14: NGROK_BASE_URL = os.getenv("NGROK_BASE_URL")</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/app.py</a></td><td>74</td><td><span style="background-color:#7a0000; color:white; padding:4px 8px; border-radius:4px;">Critical</span></td><td>AZURE_ENDPOINT is concatenated with user-provided data without validation, leading to potential SSRF vulnerabilities.</td><td>Validate and sanitize AZURE_ENDPOINT before using it in requests.<br><a href="#" onclick="document.getElementById('details-1').style.display = document.getElementById('details-1').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-1" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 74: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py#L74" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 74)</a><br><strong>Original code (lines 69+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">69:     if is_diff:
+70:         diff_instruction = "The code below is a unified diff from a Pull Request. Lines starting with + were added, lines starting with - were removed. Only flag issues in ADDED lines (+), since removed lines are no longer part of the code. "
+71: 
+72:     prompt = focus_instruction + diff_instruction + "Review the following code from file '" + filename + "' for bugs, improvements, and security vulnerabilities.\n\nReturn ONLY valid JSON in this exact format, with no extra text before or after:\n\n{\n  \"findings\": [\n    {\n      \"file\": \"" + filename + "\",\n      \"line\": 0,\n      \"end_line\": 0,\n      \"change_type\": \"replace\",\n      \"severity\": \"High\",\n      \"issue\": \"description of the problem\",\n      \"suggested_fix\": \"how to fix it\",\n      \"fixed_code\": \"a short corrected code snippet implementing the fix\",\n      \"confidence\": 90\n    }\n  ]\n}\n\nRules:\n- severity must be one of: Critical, High, Medium, Low\n- line is the FIRST line number (1-indexed) where the issue starts\n- end_line is the LAST line number the issue spans (same as line if single line)\n- change_type must be one of: replace, insert, modify\n- fixed_code should be a short snippet showing the corrected version\n- Include one object per distinct issue found\n- If no issues found, return findings as empty list\n\nCode (line numbers shown for reference):\n\n" + add_line_numbers(code)
+73: 
+74:     url = AZURE_ENDPOINT + "/openai/deployments/" + DEPLOYMENT + "/chat/completions?api-version=2024-02-15-preview"
+75:     headers = {"api-key": AZURE_KEY, "Content-Type": "application/json"}
+76:     payload = {"messages": [{"role": "user", "content": prompt}], "temperature": 0.2, "max_tokens": 1200}
+77: 
+78:     try:
+79:         response = requests.post(url, headers=headers, json=payload, timeout=60)</pre><strong>Suggested fixed code (starting at line 74):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">74: url = f"{AZURE_ENDPOINT.rstrip('/')}/openai/deployments/{DEPLOYMENT}/chat/completions?api-version=2024-02-15-preview"</pre></div></td><td>95%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/app.py</a></td><td>79</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>The timeout for the requests.post call is set to 60 seconds, which may be too high and could lead to resource exhaustion.</td><td>Reduce the timeout to a lower value, such as 10 seconds, to prevent potential resource exhaustion.<br><a href="#" onclick="document.getElementById('details-2').style.display = document.getElementById('details-2').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-2" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 79: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py#L79" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 79)</a><br><strong>Original code (lines 74+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">74:     url = AZURE_ENDPOINT + "/openai/deployments/" + DEPLOYMENT + "/chat/completions?api-version=2024-02-15-preview"
+75:     headers = {"api-key": AZURE_KEY, "Content-Type": "application/json"}
+76:     payload = {"messages": [{"role": "user", "content": prompt}], "temperature": 0.2, "max_tokens": 1200}
+77: 
+78:     try:
+79:         response = requests.post(url, headers=headers, json=payload, timeout=60)
+80:         data = response.json()
+81:         review_text = data["choices"][0]["message"]["content"]
+82:         review_text = review_text.replace("```json", "").replace("```", "").strip()
+83:         review_json = json.loads(review_text)
+84:         findings = review_json.get("findings", [])</pre><strong>Suggested fixed code (starting at line 79):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">79: response = requests.post(url, headers=headers, json=payload, timeout=10)</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/app.py</a></td><td>92</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Generic exception handling can mask specific errors and make debugging difficult.</td><td>Handle specific exceptions such as requests.exceptions.RequestException and log detailed error messages.<br><a href="#" onclick="document.getElementById('details-3').style.display = document.getElementById('details-3').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-3" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 92: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py#L92" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 92)</a><br><strong>Original code (lines 87+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">87:             if "end_line" not in finding:
+88:                 finding["end_line"] = finding.get("line", 0)
+89:             if "change_type" not in finding:
+90:                 finding["change_type"] = "replace"
+91:         return findings
+92:     except Exception as e:
+93:         return [{
+94:             "file": filename,
+95:             "line": 0,
+96:             "end_line": 0,
+97:             "change_type": "replace",</pre><strong>Suggested fixed code (starting at line 92):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">92: except requests.exceptions.RequestException as e:</pre></div></td><td>85%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/app.py</a></td><td>262</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Git commands are executed using subprocess without proper sanitization, which could lead to command injection vulnerabilities.</td><td>Use subprocess.run with a list of arguments instead of a single string to prevent command injection.<br><a href="#" onclick="document.getElementById('details-4').style.display = document.getElementById('details-4').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-4" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 262-265: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py#L262" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 262)</a><br><strong>Original code (lines 257+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">257:         f.write(html)
+258: 
+259:     report_url = GITHUB_PAGES_BASE_URL + "/" + filename
+260: 
+261:     try:
+262:         subprocess.run(["git", "add", os.path.join("reports", filename)], cwd=os.path.join(os.path.dirname(__file__), "..", "ai-review-reports"), check=True)
+263:         subprocess.run(["git", "commit", "-m", "Add report " + filename], cwd=os.path.join(os.path.dirname(__file__), "..", "ai-review-reports"), check=True)
+264:         subprocess.run(["git", "pull", "--rebase", "origin", "main"], cwd=os.path.join(os.path.dirname(__file__), "..", "ai-review-reports"), check=True)
+265:         subprocess.run(["git", "push"], cwd=os.path.join(os.path.dirname(__file__), "..", "ai-review-reports"), check=True)
+266:         publish_status = "Published successfully."
+267: 
+268:         try:
+269:             set_repo_homepage("vanshsethi217", "ai-review-reports", report_url)
+270:         except Exception:</pre><strong>Suggested fixed code (starting at line 262):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">262: subprocess.run(["git", "add", os.path.join("reports", filename)], cwd=os.path.join(os.path.dirname(__file__), "..", "ai-review-reports"), check=True)</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/app.py</a></td><td>459</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Debug mode is enabled in Flask, which can expose sensitive information in production environments.</td><td>Disable debug mode or use an environment variable to control it.<br><a href="#" onclick="document.getElementById('details-5').style.display = document.getElementById('details-5').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-5" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 459: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py#L459" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 459)</a><br><strong>Original code (lines 454+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">454:         return {"repos": repos}
+455:     except Exception as e:
+456:         return {"error": "Could not list repos: " + str(e)}, 500
+457: 
+458: 
+459: if __name__ == "__main__":
+460:     app.run(debug=True, port=8000)
+461: </pre><strong>Suggested fixed code (starting at line 459):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">459: app.run(debug=os.getenv("FLASK_DEBUG", "False") == "True", port=8000)</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/github_client.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/github_client.py</a></td><td>5</td><td><span style="background-color:#7a0000; color:white; padding:4px 8px; border-radius:4px;">Critical</span></td><td>Environment variable GITHUB_TOKEN is used directly without validation or fallback, which could lead to runtime errors or security issues if the variable is not set.</td><td>Validate the presence of GITHUB_TOKEN and raise an appropriate error if it is missing.<br><a href="#" onclick="document.getElementById('details-6').style.display = document.getElementById('details-6').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-6" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 5: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/github_client.py#L5" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 5)</a><br><strong>Original code (lines 1+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: import os
+2: import requests
+3: import base64
+4: 
+5: GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+6: 
+7: def get_repo_files(owner, repo, path=""):
+8:     url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + path
+9:     headers = {
+10:         "Authorization": "Bearer " + GITHUB_TOKEN,</pre><strong>Suggested fixed code (starting at line 5):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">5: GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+6: if not GITHUB_TOKEN:
+7:     raise EnvironmentError("GITHUB_TOKEN environment variable is not set.")</pre></div></td><td>95%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/github_client.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/github_client.py</a></td><td>10</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Authorization header uses 'Bearer ' + GITHUB_TOKEN directly, which could expose sensitive information if logs or exceptions are printed.</td><td>Use a placeholder or mask sensitive information when logging or debugging.<br><a href="#" onclick="document.getElementById('details-7').style.display = document.getElementById('details-7').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-7" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 10: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/github_client.py#L10" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 10)</a><br><strong>Original code (lines 5+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">5: GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+6: 
+7: def get_repo_files(owner, repo, path=""):
+8:     url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + path
+9:     headers = {
+10:         "Authorization": "Bearer " + GITHUB_TOKEN,
+11:         "Accept": "application/vnd.github+json"
+12:     }
+13: 
+14:     response = requests.get(url, headers=headers)
+15:     response.raise_for_status()</pre><strong>Suggested fixed code (starting at line 10):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">10: headers = {
+11:     "Authorization": f"Bearer {GITHUB_TOKEN[:4]}...",
+12:     "Accept": "application/vnd.github+json"
+13: }</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/github_client.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/github_client.py</a></td><td>14</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>response.raise_for_status() does not handle specific HTTP errors, which could lead to unhandled exceptions.</td><td>Wrap response.raise_for_status() in a try-except block to handle specific HTTP errors gracefully.<br><a href="#" onclick="document.getElementById('details-8').style.display = document.getElementById('details-8').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-8" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 14-15: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/github_client.py#L14" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 14)</a><br><strong>Original code (lines 9+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">9:     headers = {
+10:         "Authorization": "Bearer " + GITHUB_TOKEN,
+11:         "Accept": "application/vnd.github+json"
+12:     }
+13: 
+14:     response = requests.get(url, headers=headers)
+15:     response.raise_for_status()
+16:     items = response.json()
+17: 
+18:     skip_folders = [".git", "node_modules", "venv", "__pycache__", ".github"]
+19:     skip_extensions = [".png", ".jpg", ".jpeg", ".gif", ".pdf", ".zip", ".lock", ".svg", ".ico"]
+20: </pre><strong>Suggested fixed code (starting at line 14):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">14: try:
+15:     response.raise_for_status()
+16: except requests.exceptions.HTTPError as e:
+17:     raise RuntimeError(f"HTTP error occurred: {e}")</pre></div></td><td>85%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/github_client.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/github_client.py</a></td><td>49</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>UnicodeDecodeError is caught but does not provide meaningful feedback or logging, making debugging difficult.</td><td>Log the error with details to help debugging while maintaining security.<br><a href="#" onclick="document.getElementById('details-9').style.display = document.getElementById('details-9').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-9" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 49-54: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/github_client.py#L49" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 49)</a><br><strong>Original code (lines 44+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">44: 
+45:     response = requests.get(url, headers=headers)
+46:     response.raise_for_status()
+47:     data = response.json()
+48: 
+49:     if data.get("encoding") == "base64":
+50:         decoded_bytes = base64.b64decode(data["content"])
+51:         try:
+52:             return decoded_bytes.decode("utf-8")
+53:         except UnicodeDecodeError:
+54:             return None
+55: 
+56:     return None
+57: 
+58: 
+59: def get_pr_files(owner, repo, pr_number):</pre><strong>Suggested fixed code (starting at line 49):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">49: try:
+50:     return decoded_bytes.decode("utf-8")
+51: except UnicodeDecodeError as e:
+52:     logging.error(f"Failed to decode file content: {e}")
+53:     return None</pre></div></td><td>85%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/github_client.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/github_client.py</a></td><td>158</td><td><span style="background-color:#5bc0de; color:white; padding:4px 8px; border-radius:4px;">Low</span></td><td>Hardcoded limit of 5 pages may not be sufficient for users with many repositories.</td><td>Allow the page limit to be configurable or remove the hardcoded limit entirely.<br><a href="#" onclick="document.getElementById('details-10').style.display = document.getElementById('details-10').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-10" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 158-159: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/github_client.py#L158" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 158)</a><br><strong>Original code (lines 153+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">153:                 "name": item.get("name"),
+154:                 "full_name": item.get("full_name"),
+155:                 "private": item.get("private", False)
+156:             })
+157:         page += 1
+158:         if page &gt; 5:
+159:             break
+160: 
+161:     return repos
+162: 
+163: 
+164: def set_repo_homepage(owner, repo, homepage_url):</pre><strong>Suggested fixed code (starting at line 158):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">158: MAX_PAGES = int(os.getenv("MAX_PAGES", 5))
+159: if page &gt; MAX_PAGES:
+160:     break</pre></div></td><td>80%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/github_client.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/github_client.py</a></td><td>176</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>No validation is performed on the homepage_url parameter, which could lead to invalid or malicious URLs being set.</td><td>Validate homepage_url to ensure it is a properly formatted URL before sending the request.<br><a href="#" onclick="document.getElementById('details-11').style.display = document.getElementById('details-11').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-11" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 176-178: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/github_client.py#L176" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 176)</a><br><strong>Original code (lines 171+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">171:     url = "https://api.github.com/repos/" + owner + "/" + repo
+172:     headers = {
+173:         "Authorization": "Bearer " + GITHUB_TOKEN,
+174:         "Accept": "application/vnd.github+json"
+175:     }
+176:     payload = {"homepage": homepage_url}
+177: 
+178:     response = requests.patch(url, headers=headers, json=payload)
+179:     response.raise_for_status()
+180:     return response.json()
+181: </pre><strong>Suggested fixed code (starting at line 176):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">176: from urllib.parse import urlparse
+177: parsed_url = urlparse(homepage_url)
+178: if not parsed_url.scheme or not parsed_url.netloc:
+179:     raise ValueError("Invalid homepage URL")</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/requirements.txt" target="_blank" style="color:#2563eb; text-decoration:none;">backend/requirements.txt</a></td><td>2</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>The certifi version specified (2026.6.17) is invalid as it references a future date. This could indicate a typo or an attempt to use a non-existent version.</td><td>Update the certifi version to the latest valid release.<br><a href="#" onclick="document.getElementById('details-12').style.display = document.getElementById('details-12').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-12" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 2: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/requirements.txt#L2" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 2)</a><br><strong>Original code (lines 1+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: blinker==1.9.0
+2: certifi==2026.6.17
+3: charset-normalizer==3.4.7
+4: click==8.1.8
+5: Flask==3.1.3
+6: flask-cors==6.0.5
+7: idna==3.18</pre><strong>Suggested fixed code (starting at line 2):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">2: certifi==2023.7.22</pre></div></td><td>95%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/requirements.txt" target="_blank" style="color:#2563eb; text-decoration:none;">backend/requirements.txt</a></td><td>12</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>The python-dotenv version specified (1.2.1) is outdated and may contain security vulnerabilities.</td><td>Update python-dotenv to the latest stable version.<br><a href="#" onclick="document.getElementById('details-13').style.display = document.getElementById('details-13').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-13" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 12: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/requirements.txt#L12" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 12)</a><br><strong>Original code (lines 7+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">7: idna==3.18
+8: importlib_metadata==8.7.1
+9: itsdangerous==2.2.0
+10: Jinja2==3.1.6
+11: MarkupSafe==3.0.3
+12: python-dotenv==1.2.1
+13: requests==2.32.5
+14: typing_extensions==4.15.0
+15: urllib3==2.6.3
+16: Werkzeug==3.1.8
+17: zipp==3.23.1</pre><strong>Suggested fixed code (starting at line 12):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">12: python-dotenv==1.0.0</pre></div></td><td>90%</td></tr></table></body></html>
