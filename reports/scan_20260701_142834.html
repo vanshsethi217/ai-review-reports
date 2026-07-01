@@ -1,0 +1,115 @@
+<html><head><title>AI Code Review Report</title><style>body{font-family:Arial,sans-serif;margin:40px;}h1{color:#333;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ccc;padding:10px;text-align:left;vertical-align:top;}th{background-color:#f2f2f2;}a{color:#2563eb;}</style></head><body><h1>AI Code Review Report</h1><div style="background-color:#65a30d; color:white; padding:24px; border-radius:8px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between;"><div><div style="font-size:14px; opacity:0.9;">Security Score</div><div style="font-size:42px; font-weight:bold;">80/100</div></div><div style="font-size:64px; font-weight:bold;">B</div></div><div style="background:#f8f9fa; border:1px solid #e2e8f0; border-radius:8px; padding:12px 16px; margin-bottom:16px; font-size:12px; color:#555;"><strong>Score Guide:</strong> &nbsp;<span style="color:#16a34a">&#9632; A (90-100): Excellent &mdash; minimal/no issues</span> &nbsp;|&nbsp; <span style="color:#65a30d">&#9632; B (75-89): Good &mdash; minor issues only</span> &nbsp;|&nbsp; <span style="color:#ca8a04">&#9632; C (60-74): Fair &mdash; moderate issues</span> &nbsp;|&nbsp; <span style="color:#ea580c">&#9632; D (40-59): Poor &mdash; significant issues</span> &nbsp;|&nbsp; <span style="color:#dc2626">&#9632; F (0-39): Critical &mdash; severe vulnerabilities</span></div><div style="margin-bottom:16px; font-size:14px; color:#555;">Critical: 0 &nbsp;|&nbsp; High: 2 &nbsp;|&nbsp; Medium: 6 &nbsp;|&nbsp; Low: 1</div><p>Total findings: 9</p><table><tr><th>File</th><th>Line</th><th>Severity</th><th>Issue</th><th>Suggested Fix</th><th>Confidence</th></tr><tr><td><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/index.html" target="_blank" style="color:#2563eb; text-decoration:none;">index.html</a></td><td>48</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>The 'reportLink' anchor tag has an href attribute set to '#', which can lead to potential security vulnerabilities such as open redirect attacks if dynamically updated without proper validation.</td><td>Ensure the href attribute is dynamically updated with a validated and sanitized URL or set it to a safe default value.<br><a href="#" onclick="document.getElementById('details-0').style.display = document.getElementById('details-0').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-0" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 48: MODIFY</div><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/index.html#L48" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 48)</a><br><strong>Original code (lines 43+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">43:         &lt;div id="progressList" class="progress-list"&gt;&lt;/div&gt;
+44: 
+45:         &lt;div id="resultBox" class="result-box hidden"&gt;
+46:             &lt;h3&gt;Scan Complete&lt;/h3&gt;
+47:             &lt;p id="resultSummary"&gt;&lt;/p&gt;
+48:             &lt;a id="reportLink" href="#" target="_blank" class="report-link"&gt;Open Report&lt;/a&gt;
+49:         &lt;/div&gt;
+50:     &lt;/div&gt;
+51: 
+52:     &lt;script src="script.js"&gt;&lt;/script&gt;
+53: &lt;/body&gt;</pre><strong>Suggested fixed code (starting at line 48):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">48: &lt;a id="reportLink" href="about:blank" target="_blank" class="report-link"&gt;Open Report&lt;/a&gt;</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/index.html" target="_blank" style="color:#2563eb; text-decoration:none;">index.html</a></td><td>26</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Inline JavaScript in the onclick attributes can lead to security vulnerabilities such as Cross-Site Scripting (XSS) if user input is improperly sanitized.</td><td>Move the JavaScript logic to an external script file and bind event listeners using JavaScript instead of inline attributes.<br><a href="#" onclick="document.getElementById('details-1').style.display = document.getElementById('details-1').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-1" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 26-32: MODIFY</div><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/index.html#L26" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 26)</a><br><strong>Original code (lines 21+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">21:         &lt;div class="form-group"&gt;
+22:             &lt;label for="prompt"&gt;Custom Review Focus (optional)&lt;/label&gt;
+23:             &lt;textarea id="prompt" rows="3" placeholder="e.g. Review for authentication flaws and access control issues"&gt;&lt;/textarea&gt;
+24:             &lt;div class="preset-label-row"&gt;
+25:                 &lt;span class="preset-label"&gt;Suggested prompts (click to use):&lt;/span&gt;
+26:                 &lt;button type="button" class="clear-btn" onclick="setPreset('')"&gt;&amp;#10005; clear&lt;/button&gt;
+27:             &lt;/div&gt;
+28:             &lt;div class="preset-buttons"&gt;
+29:                 &lt;button type="button" class="preset-btn" onclick="setPreset('Review for SQL injection and unsafe database query construction')"&gt;SQL Injection&lt;/button&gt;
+30:                 &lt;button type="button" class="preset-btn" onclick="setPreset('Audit against OWASP Top 10 security risks')"&gt;OWASP Top 10&lt;/button&gt;
+31:                 &lt;button type="button" class="preset-btn" onclick="setPreset('Identify performance bottlenecks and inefficient code patterns')"&gt;Performance&lt;/button&gt;
+32:                 &lt;button type="button" class="preset-btn" onclick="setPreset('Detect hardcoded credentials, API keys, tokens, and secrets')"&gt;Hardcoded Secrets&lt;/button&gt;
+33:             &lt;/div&gt;
+34:             &lt;div class="saved-prompts-row"&gt;
+35:                 &lt;button type="button" class="save-prompt-btn" onclick="saveCurrentPrompt()"&gt;+ Save current prompt&lt;/button&gt;
+36:             &lt;/div&gt;
+37:             &lt;div id="savedPromptsList" class="saved-prompts-list"&gt;&lt;/div&gt;</pre><strong>Suggested fixed code (starting at line 26):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">26: Remove the onclick attributes and bind event listeners in 'script.js'. Example: document.querySelector('.clear-btn').addEventListener('click', () =&gt; setPreset(''));</pre></div></td><td>85%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/index.html" target="_blank" style="color:#2563eb; text-decoration:none;">index.html</a></td><td>23</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>The 'textarea' element lacks input sanitization, which can lead to potential XSS vulnerabilities if the input is used in the DOM without proper escaping.</td><td>Ensure that any user input from the 'textarea' is sanitized before being used or displayed in the application.<br><a href="#" onclick="document.getElementById('details-2').style.display = document.getElementById('details-2').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-2" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 23: MODIFY</div><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/index.html#L23" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 23)</a><br><strong>Original code (lines 18+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">18:             &lt;/select&gt;
+19:         &lt;/div&gt;
+20: 
+21:         &lt;div class="form-group"&gt;
+22:             &lt;label for="prompt"&gt;Custom Review Focus (optional)&lt;/label&gt;
+23:             &lt;textarea id="prompt" rows="3" placeholder="e.g. Review for authentication flaws and access control issues"&gt;&lt;/textarea&gt;
+24:             &lt;div class="preset-label-row"&gt;
+25:                 &lt;span class="preset-label"&gt;Suggested prompts (click to use):&lt;/span&gt;
+26:                 &lt;button type="button" class="clear-btn" onclick="setPreset('')"&gt;&amp;#10005; clear&lt;/button&gt;
+27:             &lt;/div&gt;
+28:             &lt;div class="preset-buttons"&gt;</pre><strong>Suggested fixed code (starting at line 23):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">23: &lt;textarea id="prompt" rows="3" placeholder="e.g. Review for authentication flaws and access control issues"&gt;&lt;/textarea&gt;</pre></div></td><td>80%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/script.js" target="_blank" style="color:#2563eb; text-decoration:none;">script.js</a></td><td>1</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Hardcoded API_BASE_URL exposes sensitive endpoint and could be exploited if leaked.</td><td>Store API_BASE_URL in an environment variable or configuration file that is not exposed to the client.<br><a href="#" onclick="document.getElementById('details-3').style.display = document.getElementById('details-3').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-3" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 1: REPLACE</div><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/script.js#L1" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 1)</a><br><strong>Original code (lines 1+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: const API_BASE_URL = "https://ogle-gratified-imperial.ngrok-free.dev";
+2: const DEFAULT_OWNER = "vanshsethi217";
+3: 
+4: let scanTimerInterval = null;
+5: let scanStartTime = null;
+6: let progressPollInterval = null;</pre><strong>Suggested fixed code (starting at line 1):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: const API_BASE_URL = process.env.API_BASE_URL || "";</pre></div></td><td>95%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/script.js" target="_blank" style="color:#2563eb; text-decoration:none;">script.js</a></td><td>86</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Error handling for failed fetch requests is missing, leading to silent failures.</td><td>Log the error or display a user-friendly message when the fetch request fails.<br><a href="#" onclick="document.getElementById('details-4').style.display = document.getElementById('details-4').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-4" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 86-90: MODIFY</div><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/script.js#L86" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 86)</a><br><strong>Original code (lines 81+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">81:             "Content-Type": "application/json",
+82:             "ngrok-skip-browser-warning": "true"
+83:         },
+84:         body: JSON.stringify({ prompt_text: promptText, created_by: "dashboard-user" })
+85:     })
+86:         .then(function(response) { return response.json(); })
+87:         .then(function() {
+88:             loadSavedPrompts();
+89:         })
+90:         .catch(function() {});
+91: }
+92: 
+93: function removeSavedPrompt(promptId) {
+94:     fetch(API_BASE_URL + "/prompts/" + promptId, {
+95:         method: "DELETE",</pre><strong>Suggested fixed code (starting at line 86):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">86: .catch(function(error) { console.error('Failed to save prompt:', error); });</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/script.js" target="_blank" style="color:#2563eb; text-decoration:none;">script.js</a></td><td>102</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Error handling for failed delete requests is missing, leading to silent failures.</td><td>Log the error or display a user-friendly message when the delete request fails.<br><a href="#" onclick="document.getElementById('details-5').style.display = document.getElementById('details-5').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-5" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 102: MODIFY</div><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/script.js#L102" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 102)</a><br><strong>Original code (lines 97+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">97:     })
+98:         .then(function(response) { return response.json(); })
+99:         .then(function() {
+100:             loadSavedPrompts();
+101:         })
+102:         .catch(function() {});
+103: }
+104: 
+105: function generateScanId() {
+106:     return "scan_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+107: }</pre><strong>Suggested fixed code (starting at line 102):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">102: .catch(function(error) { console.error('Failed to delete prompt:', error); });</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/script.js" target="_blank" style="color:#2563eb; text-decoration:none;">script.js</a></td><td>136</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Error handling for failed progress polling requests is missing, leading to silent failures.</td><td>Log the error or display a user-friendly message when the polling request fails.<br><a href="#" onclick="document.getElementById('details-6').style.display = document.getElementById('details-6').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-6" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 136: MODIFY</div><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/script.js#L136" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 136)</a><br><strong>Original code (lines 131+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">131:         })
+132:             .then(function(response) { return response.json(); })
+133:             .then(function(data) {
+134:                 progressList.textContent = data.message || "";
+135:             })
+136:             .catch(function() {});
+137:     }, 1000);
+138: }
+139: 
+140: function stopProgressPolling() {
+141:     if (progressPollInterval) {</pre><strong>Suggested fixed code (starting at line 136):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">136: .catch(function(error) { console.error('Failed to poll progress:', error); });</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/script.js" target="_blank" style="color:#2563eb; text-decoration:none;">script.js</a></td><td>233</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>Error handling for failed scan requests is minimal and does not provide detailed feedback.</td><td>Log the error details and provide a user-friendly error message.<br><a href="#" onclick="document.getElementById('details-7').style.display = document.getElementById('details-7').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-7" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 233-238: MODIFY</div><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/script.js#L233" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 233)</a><br><strong>Original code (lines 228+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">228:             } else {
+229:                 reportLinkEl.textContent = "Open Report (may still be deploying - retry if blank)";
+230:             }
+231:         }, 12);
+232:     })
+233:     .catch(function(error) {
+234:         stopScanTimer();
+235:         stopProgressPolling();
+236:         scanButton.disabled = false;
+237:         scanButton.textContent = "Run Scan Now";
+238:         statusDiv.textContent = "Request failed: " + error;
+239:     });
+240: }
+241: 
+242: loadRepoDropdown();
+243: loadSavedPrompts();</pre><strong>Suggested fixed code (starting at line 233):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">233: .catch(function(error) { console.error('Scan request failed:', error); statusDiv.textContent = 'An error occurred while running the scan. Please try again.'; });</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/script.js" target="_blank" style="color:#2563eb; text-decoration:none;">script.js</a></td><td>152</td><td><span style="background-color:#5bc0de; color:white; padding:4px 8px; border-radius:4px;">Low</span></td><td>Repeated use of setTimeout for retries in waitForReportAvailable can lead to unbounded retries if not carefully managed.</td><td>Ensure a maximum retry limit is enforced and provide feedback to the user if retries are exhausted.<br><a href="#" onclick="document.getElementById('details-8').style.display = document.getElementById('details-8').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-8" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 152-166: MODIFY</div><a href="https://github.com/vanshsethi217/ai-review-frontend/blob/main/script.js#L152" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 152)</a><br><strong>Original code (lines 147+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">147: function waitForReportAvailable(reportUrl, onReady, attemptsLeft) {
+148:     if (attemptsLeft &lt;= 0) {
+149:         onReady(false);
+150:         return;
+151:     }
+152:     fetch(reportUrl, { method: "HEAD", cache: "no-store" })
+153:         .then(function(response) {
+154:             if (response.ok) {
+155:                 onReady(true);
+156:             } else {
+157:                 setTimeout(function() {
+158:                     waitForReportAvailable(reportUrl, onReady, attemptsLeft - 1);
+159:                 }, 5000);
+160:             }
+161:         })
+162:         .catch(function() {
+163:             setTimeout(function() {
+164:                 waitForReportAvailable(reportUrl, onReady, attemptsLeft - 1);
+165:             }, 5000);
+166:         });
+167: }
+168: 
+169: function runScan() {
+170:     const repo = document.getElementById("repo").value.trim();
+171:     const prompt = document.getElementById("prompt").value.trim();</pre><strong>Suggested fixed code (starting at line 152):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">152: if (attemptsLeft &lt;= 0) { onReady(false); console.error('Max retry attempts reached for report availability.'); return; }</pre></div></td><td>85%</td></tr></table></body></html>
