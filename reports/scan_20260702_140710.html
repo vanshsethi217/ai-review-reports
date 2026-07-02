@@ -1,0 +1,91 @@
+<html><head><title>AI Code Review Report</title><style>body{font-family:Arial,sans-serif;margin:40px;}h1{color:#333;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ccc;padding:10px;text-align:left;vertical-align:top;}th{background-color:#f2f2f2;}a{color:#2563eb;}</style></head><body><h1>AI Code Review Report</h1><div style="background-color:#dc2626; color:white; padding:24px; border-radius:8px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between;"><div><div style="font-size:14px; opacity:0.9;">Security Score</div><div style="font-size:42px; font-weight:bold;">22/100</div></div><div style="font-size:64px; font-weight:bold;">F</div></div><div style="background:#f8f9fa; border:1px solid #e2e8f0; border-radius:8px; padding:12px 16px; margin-bottom:16px; font-size:12px; color:#555;"><strong>Score Guide:</strong> &nbsp;<span style="color:#16a34a">&#9632; A (90-100): Excellent &mdash; minimal/no issues</span> &nbsp;|&nbsp; <span style="color:#65a30d">&#9632; B (75-89): Good &mdash; minor issues only</span> &nbsp;|&nbsp; <span style="color:#ca8a04">&#9632; C (60-74): Fair &mdash; moderate issues</span> &nbsp;|&nbsp; <span style="color:#ea580c">&#9632; D (40-59): Poor &mdash; significant issues</span> &nbsp;|&nbsp; <span style="color:#dc2626">&#9632; F (0-39): Critical &mdash; severe vulnerabilities</span></div><div style="margin-bottom:16px; font-size:14px; color:#555;">Critical: 1 &nbsp;|&nbsp; High: 3 &nbsp;|&nbsp; Medium: 1 &nbsp;|&nbsp; Low: 0</div><p>Total findings: 5</p><table><tr><th>File</th><th>Line</th><th>Severity</th><th>Issue</th><th>Suggested Fix</th><th>Confidence</th></tr><tr><td><a href="https://github.com/vanshsethi217/Hosting-Pages/blob/main/app.py" target="_blank" style="color:#2563eb; text-decoration:none;">app.py</a></td><td>12</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Hardcoded environment variables (AZURE_ENDPOINT, AZURE_KEY, DEPLOYMENT) are directly accessed without validation or fallback, which could lead to runtime errors or security risks if the variables are missing or improperly configured.</td><td>Validate the presence of these environment variables and provide a fallback mechanism or raise an appropriate error if they are not set.<br><a href="#" onclick="document.getElementById('details-0').style.display = document.getElementById('details-0').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-0" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 12-14: REPLACE</div><a href="https://github.com/vanshsethi217/Hosting-Pages/blob/main/app.py#L12" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 12)</a><br><strong>Original code (lines 7+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">7: import json
+8: from datetime import datetime
+9: 
+10: app = Flask(__name__)
+11: 
+12: AZURE_ENDPOINT = os.getenv("AZURE_ENDPOINT")
+13: AZURE_KEY = os.getenv("AZURE_KEY")
+14: DEPLOYMENT = os.getenv("DEPLOYMENT")
+15: 
+16: @app.route("/review", methods=["POST"])
+17: def review():
+18: 
+19:     code = request.json.get("code", "")</pre><strong>Suggested fixed code (starting at line 12):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">12: AZURE_ENDPOINT = os.getenv("AZURE_ENDPOINT")
+13: if not AZURE_ENDPOINT:
+14:     raise ValueError("AZURE_ENDPOINT environment variable is not set")
+15: 
+16: AZURE_KEY = os.getenv("AZURE_KEY")
+17: if not AZURE_KEY:
+18:     raise ValueError("AZURE_KEY environment variable is not set")
+19: 
+20: DEPLOYMENT = os.getenv("DEPLOYMENT")
+21: if not DEPLOYMENT:
+22:     raise ValueError("DEPLOYMENT environment variable is not set")</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/Hosting-Pages/blob/main/app.py" target="_blank" style="color:#2563eb; text-decoration:none;">app.py</a></td><td>56</td><td><span style="background-color:#7a0000; color:white; padding:4px 8px; border-radius:4px;">Critical</span></td><td>The 'api-key' header directly uses the AZURE_KEY environment variable without masking or encrypting it, which could expose sensitive credentials if logs or errors are mishandled.</td><td>Ensure that sensitive information like API keys is masked in logs and consider using a secrets management tool to securely retrieve and manage credentials.<br><a href="#" onclick="document.getElementById('details-1').style.display = document.getElementById('details-1').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-1" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 56: REPLACE</div><a href="https://github.com/vanshsethi217/Hosting-Pages/blob/main/app.py#L56" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 56)</a><br><strong>Original code (lines 51+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">51:         f"{AZURE_ENDPOINT}/openai/deployments/"
+52:         f"{DEPLOYMENT}/chat/completions?api-version=2024-02-15-preview"
+53:     )
+54: 
+55:     headers = {
+56:         "api-key": AZURE_KEY,
+57:         "Content-Type": "application/json"
+58:     }
+59: 
+60:     payload = {
+61:         "messages": [</pre><strong>Suggested fixed code (starting at line 56):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">56: headers = {
+57:     "api-key": AZURE_KEY,  # Ensure AZURE_KEY is securely managed and not logged
+58:     "Content-Type": "application/json"
+59: }</pre></div></td><td>95%</td></tr><tr><td><a href="https://github.com/vanshsethi217/Hosting-Pages/blob/main/app.py" target="_blank" style="color:#2563eb; text-decoration:none;">app.py</a></td><td>71</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>The requests.post call does not include a timeout, which can lead to the application hanging indefinitely if the external service is unresponsive.</td><td>Add a timeout parameter to the requests.post call to ensure the application does not hang indefinitely.<br><a href="#" onclick="document.getElementById('details-2').style.display = document.getElementById('details-2').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-2" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 71-75: REPLACE</div><a href="https://github.com/vanshsethi217/Hosting-Pages/blob/main/app.py#L71" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 71)</a><br><strong>Original code (lines 66+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">66:         ],
+67:         "temperature": 0.2,
+68:         "max_tokens": 800
+69:     }
+70: 
+71:     response = requests.post(
+72:         url,
+73:         headers=headers,
+74:         json=payload
+75:     )
+76: 
+77:     data = response.json()
+78: 
+79:     review_text = data["choices"][0]["message"]["content"]
+80: </pre><strong>Suggested fixed code (starting at line 71):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">71: response = requests.post(
+72:     url,
+73:     headers=headers,
+74:     json=payload,
+75:     timeout=10  # Set an appropriate timeout value in seconds
+76: )</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/Hosting-Pages/blob/main/app.py" target="_blank" style="color:#2563eb; text-decoration:none;">app.py</a></td><td>77</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>The code assumes the structure of the response JSON without checking for potential errors or missing fields, which could lead to runtime exceptions.</td><td>Add error handling to validate the structure of the response JSON and handle cases where expected fields are missing.<br><a href="#" onclick="document.getElementById('details-3').style.display = document.getElementById('details-3').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-3" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 77-79: REPLACE</div><a href="https://github.com/vanshsethi217/Hosting-Pages/blob/main/app.py#L77" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 77)</a><br><strong>Original code (lines 72+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">72:         url,
+73:         headers=headers,
+74:         json=payload
+75:     )
+76: 
+77:     data = response.json()
+78: 
+79:     review_text = data["choices"][0]["message"]["content"]
+80: 
+81:     # Remove markdown code blocks if GPT returns them
+82:     review_text = review_text.replace("```json", "")
+83:     review_text = review_text.replace("```", "")
+84:     review_text = review_text.strip()</pre><strong>Suggested fixed code (starting at line 77):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">77: try:
+78:     data = response.json()
+79:     if "choices" not in data or not data["choices"]:
+80:         raise ValueError("Invalid response structure: 'choices' key is missing or empty")
+81:     review_text = data["choices"][0]["message"]["content"]
+82: except (ValueError, KeyError, json.JSONDecodeError) as e:
+83:     return {"error": f"Failed to parse response: {str(e)}"}</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/Hosting-Pages/blob/main/app.py" target="_blank" style="color:#2563eb; text-decoration:none;">app.py</a></td><td>171</td><td><span style="background-color:#f0ad4e; color:white; padding:4px 8px; border-radius:4px;">Medium</span></td><td>The code writes HTML reports to the 'reports' directory without sanitizing the filename, which could lead to directory traversal vulnerabilities if the filename is derived from untrusted input.</td><td>Ensure the filename is sanitized and does not allow directory traversal or other unsafe operations.<br><a href="#" onclick="document.getElementById('details-4').style.display = document.getElementById('details-4').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-4" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 171-175: REPLACE</div><a href="https://github.com/vanshsethi217/Hosting-Pages/blob/main/app.py#L171" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 171)</a><br><strong>Original code (lines 166+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">166:             &lt;/table&gt;
+167: 
+168:         &lt;/body&gt;
+169:         &lt;/html&gt;
+170:         """
+171:         os.makedirs("reports", exist_ok=True)
+172:         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+173:         filename = f"reports/scan_{timestamp}.html"
+174:         with open(filename, "w") as f:
+175:             f.write(html)
+176:         return render_template_string(html)
+177: 
+178:     except Exception as e:
+179: 
+180:         return {</pre><strong>Suggested fixed code (starting at line 171):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">171: os.makedirs("reports", exist_ok=True)
+172: timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+173: filename = os.path.join("reports", f"scan_{timestamp}.html")
+174: with open(filename, "w") as f:
+175:     f.write(html)</pre></div></td><td>85%</td></tr></table></body></html>
