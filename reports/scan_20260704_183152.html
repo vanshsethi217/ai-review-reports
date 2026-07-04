@@ -1,0 +1,100 @@
+<html><head><title>AI Code Review Report</title><style>body{font-family:Arial,sans-serif;margin:40px;}h1{color:#333;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ccc;padding:10px;text-align:left;vertical-align:top;}th{background-color:#f2f2f2;}a{color:#2563eb;}</style></head><body><h1>AI Code Review Report</h1><div style="background-color:#ca8a04; color:white; padding:24px; border-radius:8px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between;"><div><div style="font-size:14px; opacity:0.9;">Security Score</div><div style="font-size:42px; font-weight:bold;">71/100</div></div><div style="font-size:64px; font-weight:bold;">C</div></div><div style="background:#f8f9fa; border:1px solid #e2e8f0; border-radius:8px; padding:12px 16px; margin-bottom:16px; font-size:12px; color:#555;"><strong>Score Guide:</strong> &nbsp;<span style="color:#16a34a">&#9632; A (90-100): Excellent &mdash; minimal/no issues</span> &nbsp;|&nbsp; <span style="color:#65a30d">&#9632; B (75-89): Good &mdash; minor issues only</span> &nbsp;|&nbsp; <span style="color:#ca8a04">&#9632; C (60-74): Fair &mdash; moderate issues</span> &nbsp;|&nbsp; <span style="color:#ea580c">&#9632; D (40-59): Poor &mdash; significant issues</span> &nbsp;|&nbsp; <span style="color:#dc2626">&#9632; F (0-39): Critical &mdash; severe vulnerabilities</span></div><div style="margin-bottom:16px; font-size:14px; color:#555;">Critical: 1 &nbsp;|&nbsp; High: 6 &nbsp;|&nbsp; Medium: 0 &nbsp;|&nbsp; Low: 0</div><p>Total findings: 7</p><table><tr><th>File</th><th>Line</th><th>Severity</th><th>Issue</th><th>Suggested Fix</th><th>Confidence</th></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/app.py</a></td><td>15</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Hardcoded URL for NGROK_BASE_URL.</td><td>Store the NGROK_BASE_URL in an environment variable and retrieve it using os.getenv().<br><a href="#" onclick="document.getElementById('details-0').style.display = document.getElementById('details-0').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-0" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 15: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py#L15" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 15)</a><br><strong>Original code (lines 10+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">10: import threading
+11: import uuid
+12: from datetime import datetime
+13: from github_client import get_repo_files, get_file_content, get_pr_files, create_workflow_file, list_user_repos, post_pr_comment, set_repo_homepage, get_authenticated_username, exchange_code_for_token
+14: 
+15: NGROK_BASE_URL = "https://ogle-gratified-imperial.ngrok-free.dev"
+16: FRONTEND_URL = "https://vanshsethi217.github.io/ai-review-frontend/"
+17: 
+18: GITHUB_OAUTH_CLIENT_ID = os.getenv("GITHUB_OAUTH_CLIENT_ID")
+19: GITHUB_OAUTH_CLIENT_SECRET = os.getenv("GITHUB_OAUTH_CLIENT_SECRET")
+20: OAUTH_CALLBACK_URL = NGROK_BASE_URL + "/auth/github/callback"</pre><strong>Suggested fixed code (starting at line 15):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">15: NGROK_BASE_URL = os.getenv('NGROK_BASE_URL')</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/app.py</a></td><td>16</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Hardcoded URL for FRONTEND_URL.</td><td>Store the FRONTEND_URL in an environment variable and retrieve it using os.getenv().<br><a href="#" onclick="document.getElementById('details-1').style.display = document.getElementById('details-1').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-1" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 16: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py#L16" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 16)</a><br><strong>Original code (lines 11+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">11: import uuid
+12: from datetime import datetime
+13: from github_client import get_repo_files, get_file_content, get_pr_files, create_workflow_file, list_user_repos, post_pr_comment, set_repo_homepage, get_authenticated_username, exchange_code_for_token
+14: 
+15: NGROK_BASE_URL = "https://ogle-gratified-imperial.ngrok-free.dev"
+16: FRONTEND_URL = "https://vanshsethi217.github.io/ai-review-frontend/"
+17: 
+18: GITHUB_OAUTH_CLIENT_ID = os.getenv("GITHUB_OAUTH_CLIENT_ID")
+19: GITHUB_OAUTH_CLIENT_SECRET = os.getenv("GITHUB_OAUTH_CLIENT_SECRET")
+20: OAUTH_CALLBACK_URL = NGROK_BASE_URL + "/auth/github/callback"
+21: </pre><strong>Suggested fixed code (starting at line 16):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">16: FRONTEND_URL = os.getenv('FRONTEND_URL')</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/app.py</a></td><td>30</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Hardcoded URL for GITHUB_PAGES_BASE_URL.</td><td>Store the GITHUB_PAGES_BASE_URL in an environment variable and retrieve it using os.getenv().<br><a href="#" onclick="document.getElementById('details-2').style.display = document.getElementById('details-2').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-2" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 30: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py#L30" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 30)</a><br><strong>Original code (lines 25+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">25: AZURE_ENDPOINT = os.getenv("AZURE_ENDPOINT")
+26: AZURE_KEY = os.getenv("AZURE_KEY")
+27: DEPLOYMENT = os.getenv("DEPLOYMENT")
+28: 
+29: REPORTS_REPO_PATH = os.path.join(os.path.dirname(__file__), "..", "ai-review-reports", "reports")
+30: GITHUB_PAGES_BASE_URL = "https://vanshsethi217.github.io/ai-review-reports/reports"
+31: 
+32: SEVERITY_COLORS = {"Critical": "#7a0000", "High": "#d9534f", "Medium": "#f0ad4e", "Low": "#5bc0de"}
+33: 
+34: SCAN_PROGRESS = {}
+35: PROGRESS_LOCK = threading.Lock()</pre><strong>Suggested fixed code (starting at line 30):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">30: GITHUB_PAGES_BASE_URL = os.getenv('GITHUB_PAGES_BASE_URL')</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/app.py</a></td><td>91</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Hardcoded API version in the Azure endpoint URL.</td><td>Store the API version in an environment variable and construct the URL dynamically.<br><a href="#" onclick="document.getElementById('details-3').style.display = document.getElementById('details-3').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-3" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 91: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py#L91" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 91)</a><br><strong>Original code (lines 86+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">86:     if is_diff:
+87:         diff_instruction = "The code below is a unified diff from a Pull Request. Lines starting with + were added, lines starting with - were removed. Only flag issues in ADDED lines (+), since removed lines are no longer part of the code. "
+88: 
+89:     prompt = focus_instruction + diff_instruction + "Review the following code from file '" + filename + "' for bugs, improvements, and security vulnerabilities.\n\nReturn ONLY valid JSON in this exact format, with no extra text before or after:\n\n{\n  \"findings\": [\n    {\n      \"file\": \"" + filename + "\",\n      \"line\": 0,\n      \"end_line\": 0,\n      \"change_type\": \"replace\",\n      \"severity\": \"High\",\n      \"issue\": \"description of the problem\",\n      \"suggested_fix\": \"how to fix it\",\n      \"fixed_code\": \"a short corrected code snippet implementing the fix\",\n      \"confidence\": 90\n    }\n  ]\n}\n\nRules:\n- severity must be one of: Critical, High, Medium, Low\n- line is the FIRST line number (1-indexed) where the issue starts\n- end_line is the LAST line number the issue spans (same as line if single line)\n- change_type must be one of: replace, insert, modify\n- fixed_code should be a short snippet showing the corrected version\n- Include one object per distinct issue found\n- If no issues found, return findings as empty list\n\nCode (line numbers shown for reference):\n\n" + add_line_numbers(code)
+90: 
+91:     url = AZURE_ENDPOINT + "/openai/deployments/" + DEPLOYMENT + "/chat/completions?api-version=2024-02-15-preview"
+92:     headers = {"api-key": AZURE_KEY, "Content-Type": "application/json"}
+93:     payload = {"messages": [{"role": "user", "content": prompt}], "temperature": 0.2, "max_tokens": 1200}
+94: 
+95:     try:
+96:         response = requests.post(url, headers=headers, json=payload, timeout=60)</pre><strong>Suggested fixed code (starting at line 91):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">91: url = f"{AZURE_ENDPOINT}/openai/deployments/{DEPLOYMENT}/chat/completions?api-version={os.getenv('AZURE_API_VERSION')}"</pre></div></td><td>85%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/app.py</a></td><td>475</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Hardcoded NGROK_BASE_URL in the curl command for GitHub Action.</td><td>Replace the hardcoded NGROK_BASE_URL with a reference to the environment variable.<br><a href="#" onclick="document.getElementById('details-4').style.display = document.getElementById('details-4').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-4" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 475-480: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/app.py#L475" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 475)</a><br><strong>Original code (lines 470+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">470: 
+471:     if not owner or not repo:
+472:         return {"error": "owner and repo fields are required"}, 400
+473: 
+474:     curl_command = (
+475:         "curl -X POST " + NGROK_BASE_URL + "/scan-pr \\\n"
+476:         "            -H \"Content-Type: application/json\" \\\n"
+477:         "            -d '{\"owner\": \"${{ github.repository_owner }}\", "
+478:         "\"repo\": \"${{ github.event.repository.name }}\", "
+479:         "\"pr_number\": ${{ github.event.pull_request.number }}, "
+480:         "\"prompt\": \"" + custom_instructions + "\"}'"
+481:     )
+482: 
+483:     yaml_content = (
+484:         "name: AI Security Review\n\n"
+485:         "on:\n"</pre><strong>Suggested fixed code (starting at line 475):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">475: curl_command = (
+476:     "curl -X POST " + os.getenv('NGROK_BASE_URL') + "/scan-pr \\n"
+477:     "            -H \"Content-Type: application/json\" \\n"
+478:     "            -d '{\"owner\": \"${{ github.repository_owner }}\", "
+479:     "\"repo\": \"${{ github.event.repository.name }}\", "
+480:     "\"pr_number\": ${{ github.event.pull_request.number }}, "
+481:     "\"prompt\": \"" + custom_instructions + "\"}'"
+482: )</pre></div></td><td>85%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/github_client.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/github_client.py</a></td><td>5</td><td><span style="background-color:#d9534f; color:white; padding:4px 8px; border-radius:4px;">High</span></td><td>Hardcoded environment variable name 'GITHUB_TOKEN' may expose sensitive information if improperly managed.</td><td>Use a configuration management tool or secrets manager to securely handle sensitive environment variables.<br><a href="#" onclick="document.getElementById('details-5').style.display = document.getElementById('details-5').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-5" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Line 5: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/github_client.py#L5" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 5)</a><br><strong>Original code (lines 1+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">1: import os
+2: import requests
+3: import base64
+4: 
+5: DEFAULT_GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+6: 
+7: 
+8: def _auth_headers(token=None):
+9:     active_token = token or DEFAULT_GITHUB_TOKEN
+10:     return {</pre><strong>Suggested fixed code (starting at line 5):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">5: DEFAULT_GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")</pre></div></td><td>90%</td></tr><tr><td><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/github_client.py" target="_blank" style="color:#2563eb; text-decoration:none;">backend/github_client.py</a></td><td>169</td><td><span style="background-color:#7a0000; color:white; padding:4px 8px; border-radius:4px;">Critical</span></td><td>Client secret is passed directly as a parameter, which could lead to accidental exposure if logged or mishandled.</td><td>Use a secure secrets management tool to retrieve the client secret and ensure it is not hardcoded or exposed.<br><a href="#" onclick="document.getElementById('details-6').style.display = document.getElementById('details-6').style.display === 'none' ? 'block' : 'none'; return false;" style="font-size:12px; color:#2563eb;">more details...</a><div id="details-6" style="display:none; margin-top:8px; font-size:12px;"><div style="margin-bottom:6px; font-weight:bold; color:#7c2d12;">Lines 169-178: REPLACE</div><a href="https://github.com/vanshsethi217/ai-security-review-platform/blob/main/backend/github_client.py#L169" target="_blank" style="font-size:12px; color:#2563eb; display:inline-block; margin-bottom:8px;">&#128279; Go to code location (line 169)</a><br><strong>Original code (lines 164+, file line numbers):</strong><pre style="background:#fef2f2; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">164:     response = requests.get("https://api.github.com/user", headers=headers)
+165:     response.raise_for_status()
+166:     return response.json().get("login")
+167: 
+168: 
+169: def exchange_code_for_token(code, client_id, client_secret, redirect_uri):
+170:     response = requests.post(
+171:         "https://github.com/login/oauth/access_token",
+172:         headers={"Accept": "application/json"},
+173:         data={
+174:             "client_id": client_id,
+175:             "client_secret": client_secret,
+176:             "code": code,
+177:             "redirect_uri": redirect_uri
+178:         }
+179:     )
+180:     response.raise_for_status()
+181:     data = response.json()
+182:     return data.get("access_token"), data.get("error")
+183: </pre><strong>Suggested fixed code (starting at line 169):</strong><pre style="background:#f0fdf4; padding:8px; border-radius:4px; overflow-x:auto; white-space:pre-wrap;">169: response = requests.post(
+170:     "https://github.com/login/oauth/access_token",
+171:     headers={"Accept": "application/json"},
+172:     data={
+173:         "client_id": client_id,
+174:         "client_secret": os.getenv("GITHUB_CLIENT_SECRET"),
+175:         "code": code,
+176:         "redirect_uri": redirect_uri
+177:     }
+178: )</pre></div></td><td>95%</td></tr></table></body></html>
